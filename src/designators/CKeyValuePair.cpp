@@ -33,6 +33,12 @@ CKeyValuePair::CKeyValuePair(string strKey, geometry_msgs::PoseStamped psPoseSta
   this->setValue(psPoseStampedValue);
 }
 
+CKeyValuePair::CKeyValuePair(string strKey, geometry_msgs::Pose posPoseValue) {
+  this->init();
+  this->setKey(strKey);
+  this->setValue(posPoseValue);
+}
+
 CKeyValuePair::~CKeyValuePair() {
   if(m_acData != NULL) {
     delete[] m_acData;
@@ -57,6 +63,7 @@ void CKeyValuePair::fillWithKeyValueContent(designator_integration_msgs::KeyValu
   m_strValue = kvpContent.value_string;
   m_fValue = kvpContent.value_float;
   m_psPoseStampedValue = kvpContent.value_posestamped;
+  m_posPoseValue = kvpContent.value_pose;
   // Add 'data' field here as well.
 }
 
@@ -74,6 +81,10 @@ float CKeyValuePair::floatValue() {
 
 geometry_msgs::PoseStamped CKeyValuePair::poseStampedValue() {
   return m_psPoseStampedValue;
+}
+
+geometry_msgs::Pose CKeyValuePair::poseValue() {
+  return m_posPoseValue;
 }
 
 int CKeyValuePair::id() {
@@ -201,6 +212,11 @@ void CKeyValuePair::setValue(geometry_msgs::PoseStamped psPoseStampedValue) {
   this->setType(POSESTAMPED);
 }
 
+void CKeyValuePair::setValue(geometry_msgs::Pose posPoseValue) {
+  m_posPoseValue = posPoseValue;
+  this->setType(POSE);
+}
+
 void CKeyValuePair::setKey(string strKey) {
   m_strKey = strKey;
 }
@@ -230,6 +246,13 @@ CKeyValuePair *CKeyValuePair::addChild(string strKey, geometry_msgs::PoseStamped
   return ckvpNewChild;
 }
 
+CKeyValuePair *CKeyValuePair::addChild(string strKey, geometry_msgs::Pose posPoseValue) {
+  CKeyValuePair *ckvpNewChild = this->addChild(strKey);
+  ckvpNewChild->setValue(posPoseValue);
+  
+  return ckvpNewChild;
+}
+
 vector<designator_integration_msgs::KeyValuePair> CKeyValuePair::serializeToMessage(int nParent, int nID) {
   vector<designator_integration_msgs::KeyValuePair> vecReturn;
   designator_integration_msgs::KeyValuePair kvpSerialized;
@@ -246,6 +269,7 @@ vector<designator_integration_msgs::KeyValuePair> CKeyValuePair::serializeToMess
   kvpSerialized.value_string = m_strValue;
   kvpSerialized.value_float = m_fValue;
   kvpSerialized.value_posestamped = m_psPoseStampedValue;
+  kvpSerialized.value_pose = m_posPoseValue;
   
   vecReturn.push_back(kvpSerialized);
   
@@ -308,6 +332,28 @@ float CKeyValuePair::floatValue(string strChildKey) {
   return 0.0;
 }
 
+geometry_msgs::PoseStamped CKeyValuePair::poseStampedValue(string strChildKey) {
+  CKeyValuePair *ckvpChild = this->childForKey(strChildKey);
+  
+  if(ckvpChild) {
+    return ckvpChild->poseStampedValue();
+  }
+  
+  geometry_msgs::PoseStamped psEmpty;
+  return psEmpty;
+}
+
+geometry_msgs::Pose CKeyValuePair::poseValue(string strChildKey) {
+  CKeyValuePair *ckvpChild = this->childForKey(strChildKey);
+  
+  if(ckvpChild) {
+    return ckvpChild->poseValue();
+  }
+  
+  geometry_msgs::Pose posEmpty;
+  return posEmpty;
+}
+
 void CKeyValuePair::setValue(string strKey, string strValue) {
   CKeyValuePair *ckvpChild = this->childForKey(strKey);
   
@@ -335,5 +381,15 @@ void CKeyValuePair::setValue(string strKey, geometry_msgs::PoseStamped psPoseSta
     ckvpChild->setValue(psPoseStampedValue);
   } else {
     this->addChild(strKey, psPoseStampedValue);
+  }
+}
+
+void CKeyValuePair::setValue(string strKey, geometry_msgs::Pose posPoseValue) {
+  CKeyValuePair *ckvpChild = this->childForKey(strKey);
+  
+  if(ckvpChild) {
+    ckvpChild->setValue(posPoseValue);
+  } else {
+    this->addChild(strKey, posPoseValue);
   }
 }
