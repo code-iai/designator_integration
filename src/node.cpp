@@ -40,6 +40,11 @@ int main(int argc, char **argv) {
   
   desigTest->setValue("test", "value");
   desigTest->setValue("test2", 0.5);
+  CKeyValuePair *c1 = desigTest->addChild("subnode");
+  c1->setValue("val1", 0.3);
+  c1->setValue("val2", "somevalue");
+  CKeyValuePair *c2 = c1->addChild("subnode-second-level");
+  c2->setValue("val3", "wow");
   desigTest->printDesignator();
   
   delete desigTest;

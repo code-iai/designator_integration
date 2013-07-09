@@ -61,16 +61,10 @@ class CKeyValuePair {
   void setID(int nID);
   void setParent(int nParent);
   
-  void setStringValue(string strValue);
-  void setFloatValue(float fValue);
-  void setPoseStampedValue(geometry_msgs::PoseStamped psPoseStampedValue);
   void setValue(string strValue);
   void setValue(float fValue);
   void setValue(geometry_msgs::PoseStamped psPoseStampedValue);
   
-  void setStringValue(string strKey, string strValue);
-  void setFloatValue(string strKey, float fValue);
-  void setPoseStampedValue(string strKey, geometry_msgs::PoseStamped psPoseStampedValue);
   void setValue(string strKey, string strValue);
   void setValue(string strKey, float fValue);
   void setValue(string strKey, geometry_msgs::PoseStamped psPoseStampedValue);
@@ -78,17 +72,13 @@ class CKeyValuePair {
   void setKey(string strKey);
   void setType(enum ValueType evtType);
   
-  void addChild(CKeyValuePair *kvpAdd);
+  CKeyValuePair *addChild(string strKey);
   list<CKeyValuePair*> children();
   
   void printPair(int nSpaceOffset, bool bOffsetRegular = true, bool bNewline = true);
   void printSpaces(int nSpaces);
   
-  CKeyValuePair *addStringChild(string strKey, string strValue);
-  CKeyValuePair *addFloatChild(string strKey, float fValue);
-  CKeyValuePair *addPoseStampedChild(string strKey, geometry_msgs::PoseStamped psPoseStampedValue);
-  
-  CKeyValuePair *addChild(string strKey);
+  void addChild(CKeyValuePair *ckvpChildAdd);
   CKeyValuePair *addChild(string strKey, string strValue);
   CKeyValuePair *addChild(string strKey, float fValue);
   CKeyValuePair *addChild(string strKey, geometry_msgs::PoseStamped psPoseStampedValue);
