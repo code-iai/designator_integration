@@ -13,7 +13,7 @@ using namespace std;
 
 bool desigCommCB(designator_integration_msgs::DesignatorCommunication::Request &req,
 		 designator_integration_msgs::DesignatorCommunication::Response &res) {
-  CDesignator *desigRequest = new CDesignator(req.request);
+  CDesignator *desigRequest = new CDesignator(req.request.designator);
   CDesignator *desigResponse = new CDesignator();
   desigResponse->setType(OBJECT);
   desigResponse->addValue("name", desigRequest->getStringValue("name"));
@@ -24,7 +24,7 @@ bool desigCommCB(designator_integration_msgs::DesignatorCommunication::Request &
   
   desigResponse->addValue("pose", psTest);
   
-  res.response.push_back(desigResponse->serializeToMessage());
+  res.response.designators.push_back(desigResponse->serializeToMessage());
   
   return true;
 }
