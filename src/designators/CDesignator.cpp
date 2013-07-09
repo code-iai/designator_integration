@@ -83,6 +83,7 @@ void CDesignator::printDesignator() {
     CKeyValuePair *kvpCurrent = *itKVP;
     
     kvpCurrent->printPair(0);
+    cout << endl;
   }
 }
 

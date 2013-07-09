@@ -45,6 +45,9 @@ int main(int argc, char **argv) {
   c1->setValue("val2", "somevalue");
   CKeyValuePair *c2 = c1->addChild("subnode-second-level");
   c2->setValue("val3", "wow");
+  c2->setValue("val4", "wow2");
+  c1->setValue("val5", "somevalue2");
+  desigTest->setValue("test-value", 1.9);
   desigTest->printDesignator();
   
   delete desigTest;

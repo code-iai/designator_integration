@@ -121,66 +121,106 @@ list<CKeyValuePair*> CKeyValuePair::children() {
 }
 
 void CKeyValuePair::printPair(int nSpaceOffset, bool bOffsetRegular, bool bNewline) {
+  cout << "(" << m_strKey << " ";
+  
   switch(m_evtType) {
   case STRING: {
-    if(bOffsetRegular) {
-      this->printSpaces(nSpaceOffset);
-    }
-    cout << "(" << m_strKey << " " << m_strValue << ")";
-    if(bNewline) {
-      cout << endl;
-    }
+    cout << m_strValue << ")";
   } break;
-
-  case FLOAT: {
-    if(bOffsetRegular) {
-      this->printSpaces(nSpaceOffset);
-    }
-    cout << "(" << m_strKey << " " << m_fValue << ")";
-    if(bNewline) {
-      cout << endl;
-    }
-  } break;
-
-  case POSESTAMPED: {
-    // print this
-  } break;
-
-  case DATA: {
-    if(bOffsetRegular) {
-      this->printSpaces(nSpaceOffset);
-    }
-    cout << "(" << m_strKey << " " << "[data])";
-    if(bNewline) {
-      cout << endl;
-    }
-  } break;
-
-  case LIST: {
-    this->printSpaces(nSpaceOffset + 1);
-    cout << "(" << m_strKey << endl;
-    this->printSpaces(nSpaceOffset + 2);
     
-    for(list<CKeyValuePair*>::iterator itChild = m_lstChildren.begin();
-	itChild != m_lstChildren.end();
-	itChild++) {
-      CKeyValuePair *kvpChild = *itChild;
-      list<CKeyValuePair*>::iterator itNext = itChild++;
-      bool bLast = (itNext == m_lstChildren.end());
-      itChild--;
+  case FLOAT: {
+    cout << m_fValue << ")";
+  } break;
+    
+  case LIST: {
+    cout << "(";
+    bool bFirst = true;
+    
+    for(int nI = 0; nI < m_lstChildren.size(); nI++) {
+      list<CKeyValuePair*>::iterator itChild = m_lstChildren.begin();
+      advance(itChild, nI);
+      CKeyValuePair *ckvpChild = *itChild;
       
-      bool bFirst = (itChild == m_lstChildren.begin());
-      
-      if(itChild == m_lstChildren.begin()) {
-	cout << "(";
+      if(!bFirst) {
+	this->printSpaces(nSpaceOffset + m_strKey.length() + 3);
+      } else {
+	bFirst = false;
       }
       
-      kvpChild->printPair(nSpaceOffset + 3, !bFirst, !bLast);
+      ckvpChild->printPair(nSpaceOffset + m_strKey.length() + 3);
+      
+      if(nI < m_lstChildren.size() - 1) {
+	cout << endl;
+      }
     }
     
-    cout << ")" << endl;
+    cout << ")";
   } break;
+    
+  default:
+    break;
   }
+  
+  // switch(m_evtType) {
+  // case STRING: {
+  //   if(bOffsetRegular) {
+  //     this->printSpaces(nSpaceOffset);
+  //   }
+  //   cout << "(" << m_strKey << " " << m_strValue << ")";
+  //   if(bNewline) {
+  //     cout << endl;
+  //   }
+  // } break;
+
+  // case FLOAT: {
+  //   if(bOffsetRegular) {
+  //     this->printSpaces(nSpaceOffset);
+  //   }
+  //   cout << "(" << m_strKey << " " << m_fValue << ")";
+  //   if(bNewline) {
+  //     cout << endl;
+  //   }
+  // } break;
+
+  // case POSESTAMPED: {
+  //   // print this
+  // } break;
+
+  // case DATA: {
+  //   if(bOffsetRegular) {
+  //     this->printSpaces(nSpaceOffset);
+  //   }
+  //   cout << "(" << m_strKey << " " << "[data])";
+  //   if(bNewline) {
+  //     cout << endl;
+  //   }
+  // } break;
+
+  // case LIST: {
+  //   this->printSpaces(nSpaceOffset + 1);
+  //   cout << "(" << m_strKey << endl;
+  //   this->printSpaces(nSpaceOffset + 2);
+    
+  //   for(list<CKeyValuePair*>::iterator itChild = m_lstChildren.begin();
+  // 	itChild != m_lstChildren.end();
+  // 	itChild++) {
+  //     CKeyValuePair *kvpChild = *itChild;
+  //     list<CKeyValuePair*>::iterator itNext = itChild++;
+  //     bool bLast = (itNext == m_lstChildren.end());
+  //     itChild--;
+      
+  //     bool bFirst = (itChild == m_lstChildren.begin());
+      
+  //     if(itChild == m_lstChildren.begin()) {
+  // 	cout << "(";
+  //     }
+      
+  //     kvpChild->printPair(nSpaceOffset + 3, !bFirst, !bLast);
+  //   }
+    
+  //   cout << ")" << endl;
+  // } break;
+  // }
 }
 
 void CKeyValuePair::printSpaces(int nSpaces) {

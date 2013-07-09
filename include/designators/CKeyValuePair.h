@@ -7,6 +7,7 @@
 
 #include <designator_integration_msgs/KeyValuePair.h>
 #include <ros/ros.h>
+#include <algorithm>
 #include <geometry_msgs/PoseStamped.h>
 
 using namespace std;
