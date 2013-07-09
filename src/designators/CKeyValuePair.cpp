@@ -393,3 +393,7 @@ void CKeyValuePair::setValue(string strKey, geometry_msgs::Pose posPoseValue) {
     this->addChild(strKey, posPoseValue);
   }
 }
+
+void CKeyValuePair::clear() {
+  m_lstChildren.clear();
+}
