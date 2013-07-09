@@ -16,13 +16,13 @@ bool desigCommCB(designator_integration_msgs::DesignatorCommunication::Request &
   CDesignator *desigRequest = new CDesignator(req.request.designator);
   CDesignator *desigResponse = new CDesignator();
   desigResponse->setType(OBJECT);
-  desigResponse->addValue("name", desigRequest->getStringValue("name"));
-  desigResponse->addValue("height", 0.2);
+  desigResponse->setValue("name", desigRequest->stringValue("name"));
+  desigResponse->setValue("height", 0.2);
   
   geometry_msgs::PoseStamped psTest;
   psTest.pose.position.x = 0.2;
   
-  desigResponse->addValue("pose", psTest);
+  desigResponse->setValue("pose", psTest);
   
   res.response.designators.push_back(desigResponse->serializeToMessage());
   
@@ -35,6 +35,14 @@ int main(int argc, char **argv) {
   ros::NodeHandle nhPrivate("~");
   ros::ServiceServer srvDesigComm = nhPrivate.advertiseService("/designator_comm",
 							       desigCommCB);
+  
+  CDesignator *desigTest = new CDesignator();
+  
+  desigTest->setValue("test", "value");
+  desigTest->setValue("test2", 0.5);
+  desigTest->printDesignator();
+  
+  delete desigTest;
   
   ros::spin();
   

@@ -31,6 +31,8 @@ class CKeyValuePair {
   double m_fValue;
   char *m_acData;
   geometry_msgs::PoseStamped m_psPoseStampedValue;
+
+ protected:
   list<CKeyValuePair*> m_lstChildren;
 
  public:
@@ -47,7 +49,9 @@ class CKeyValuePair {
   enum ValueType type();
   
   string stringValue();
+  string stringValue(string strChildKey);
   float floatValue();
+  float floatValue(string strChildKey);
   
   int id();
   int parent();
@@ -63,6 +67,13 @@ class CKeyValuePair {
   void setValue(string strValue);
   void setValue(float fValue);
   void setValue(geometry_msgs::PoseStamped psPoseStampedValue);
+  
+  void setStringValue(string strKey, string strValue);
+  void setFloatValue(string strKey, float fValue);
+  void setPoseStampedValue(string strKey, geometry_msgs::PoseStamped psPoseStampedValue);
+  void setValue(string strKey, string strValue);
+  void setValue(string strKey, float fValue);
+  void setValue(string strKey, geometry_msgs::PoseStamped psPoseStampedValue);
   
   void setKey(string strKey);
   void setType(enum ValueType evtType);
@@ -83,6 +94,7 @@ class CKeyValuePair {
   CKeyValuePair *addChild(string strKey, geometry_msgs::PoseStamped psPoseStampedValue);
   
   vector<designator_integration_msgs::KeyValuePair> serializeToMessage(int nParent, int nID);
+  CKeyValuePair *childForKey(string strKey);
 };
 
 

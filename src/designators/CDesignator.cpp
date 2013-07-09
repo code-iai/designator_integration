@@ -1,7 +1,7 @@
 #include <designators/CDesignator.h>
 
 
-CDesignator::CDesignator() {
+CDesignator::CDesignator() : CKeyValuePair() {
   this->m_edtType = UNKNOWN;
 }
 
@@ -63,7 +63,7 @@ void CDesignator::fillFromDesignatorMsg(designator_integration_msgs::Designator 
 	if(bFoundParent) {
 	  break;
 	} else {
-	  m_lstKeyValuePairs.push_back(kvpCurrent);
+	  m_lstChildren.push_back(kvpCurrent);
 	  lstKVPs.remove(kvpCurrent);
 	  break;
 	}
@@ -77,53 +77,13 @@ enum DesignatorType CDesignator::type() {
 }
 
 void CDesignator::printDesignator() {
-  for(list<CKeyValuePair*>::iterator itKVP = m_lstKeyValuePairs.begin();
-      itKVP != m_lstKeyValuePairs.end();
+  for(list<CKeyValuePair*>::iterator itKVP = m_lstChildren.begin();
+      itKVP != m_lstChildren.end();
       itKVP++) {
     CKeyValuePair *kvpCurrent = *itKVP;
     
     kvpCurrent->printPair(0);
   }
-}
-
-CKeyValuePair* CDesignator::addValue(string strKey) {
-  CKeyValuePair *kvpNew = new CKeyValuePair(strKey);
-  m_lstKeyValuePairs.push_back(kvpNew);
-  
-  return kvpNew;
-}
-
-CKeyValuePair* CDesignator::addValue(string strKey, string strValue) {
-  CKeyValuePair *kvpNew = new CKeyValuePair(strKey, strValue);
-  m_lstKeyValuePairs.push_back(kvpNew);
-  
-  return kvpNew;
-}
-
-CKeyValuePair* CDesignator::addValue(string strKey, float fValue) {
-  CKeyValuePair *kvpNew = new CKeyValuePair(strKey, fValue);
-  m_lstKeyValuePairs.push_back(kvpNew);
-  
-  return kvpNew;
-}
-
-CKeyValuePair* CDesignator::addValue(string strKey, geometry_msgs::PoseStamped psValue) {
-  CKeyValuePair *kvpNew = new CKeyValuePair(strKey, psValue);
-  m_lstKeyValuePairs.push_back(kvpNew);
-  
-  return kvpNew;
-}
-
-CKeyValuePair* CDesignator::keyValuePairForKey(string strKey) {
-  CKeyValuePair *ckvpReturn = NULL;
-  
-  for(list<CKeyValuePair*>::iterator itKVP = m_lstKeyValuePairs.begin();
-      itKVP != m_lstKeyValuePairs.end();
-      itKVP++) {
-    ckvpReturn = *itKVP;
-  }
-  
-  return ckvpReturn;
 }
 
 designator_integration_msgs::Designator CDesignator::serializeToMessage() {
@@ -132,12 +92,12 @@ designator_integration_msgs::Designator CDesignator::serializeToMessage() {
   
   int nHighestID = 0;
   vector<designator_integration_msgs::KeyValuePair> vecKVPs;
-  for(list<CKeyValuePair*>::iterator itKVP = m_lstKeyValuePairs.begin();
-      itKVP != m_lstKeyValuePairs.end();
+  for(list<CKeyValuePair*>::iterator itKVP = m_lstChildren.begin();
+      itKVP != m_lstChildren.end();
       itKVP++) {
     CKeyValuePair *ckvpCurrent = *itKVP;
     
-    vector<designator_integration_msgs::KeyValuePair> vecKVPMsgs = this->serializeKeyValuePair(ckvpCurrent, 0, nHighestID);
+    vector<designator_integration_msgs::KeyValuePair> vecKVPMsgs = ckvpCurrent->serializeToMessage(0, nHighestID + 1);
     for(vector<designator_integration_msgs::KeyValuePair>::iterator itKVPMsg = vecKVPMsgs.begin();
 	itKVPMsg != vecKVPMsgs.end();
 	itKVPMsg++) {
@@ -154,57 +114,4 @@ designator_integration_msgs::Designator CDesignator::serializeToMessage() {
   msgDesig.description = vecKVPs;
   
   return msgDesig;
-}
-
-vector<designator_integration_msgs::KeyValuePair> CDesignator::serializeKeyValuePair(CKeyValuePair *ckvpSerialize, int nParent, int nHighestID) {
-  vector<designator_integration_msgs::KeyValuePair> vecKVPs = ckvpSerialize->serializeToMessage(nParent, nHighestID + 1);
-  
-  return vecKVPs;
-}
-
-CKeyValuePair* CDesignator::getPairForKey(string strKey) {
-  CKeyValuePair* ckvpReturn = NULL;
-  for(list<CKeyValuePair*>::iterator itCKVP = m_lstKeyValuePairs.begin();
-      itCKVP != m_lstKeyValuePairs.end();
-      itCKVP++) {
-    CKeyValuePair *ckvpCurrent = *itCKVP;
-    
-    if(strcasecmp(ckvpCurrent->key().c_str(), strKey.c_str()) == 0) {
-      ckvpReturn = ckvpCurrent;
-      break;
-    }
-  }
-  
-  return ckvpReturn;
-}
-
-string CDesignator::getStringValue(string strKey) {
-  CKeyValuePair *ckvpCurrent = this->getPairForKey(strKey);
-  
-  if(ckvpCurrent) {
-    return ckvpCurrent->stringValue();
-  }
-  
-  return "";
-}
-
-float CDesignator::getFloatValue(string strKey) {
-  CKeyValuePair *ckvpCurrent = this->getPairForKey(strKey);
-  
-  if(ckvpCurrent) {
-    return ckvpCurrent->floatValue();
-  }
-  
-  return 0.0;
-}
-
-geometry_msgs::PoseStamped CDesignator::getPoseStampedValue(string strKey) {
-  CKeyValuePair *ckvpCurrent = this->getPairForKey(strKey);
-  
-  if(ckvpCurrent) {
-    return ckvpCurrent->poseStampedValue();
-  }
-  
-  geometry_msgs::PoseStamped psEmpty;
-  return psEmpty;
 }

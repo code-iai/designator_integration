@@ -2,6 +2,7 @@
 #define __C_DESIGNATOR_H__
 
 
+// System
 #include <list>
 #include <string>
 #include <string.h>
@@ -10,8 +11,10 @@
 #include <cstring>
 #include <iostream>
 
+// ROS
 #include <designator_integration_msgs/Designator.h>
 
+// Private
 #include <designators/CKeyValuePair.h>
 
 using namespace std;
@@ -25,10 +28,9 @@ enum DesignatorType {
 };
 
 
-class CDesignator {
+class CDesignator : public CKeyValuePair {
  private:
   enum DesignatorType m_edtType;
-  list<CKeyValuePair*> m_lstKeyValuePairs;
 
  public:
   CDesignator();
@@ -40,21 +42,7 @@ class CDesignator {
   enum DesignatorType type();
   void printDesignator();
   
-  CKeyValuePair* addValue(string strKey);
-  CKeyValuePair* addValue(string strKey, string strValue);
-  CKeyValuePair* addValue(string strKey, float fValue);
-  CKeyValuePair* addValue(string strKey, geometry_msgs::PoseStamped psValue);
-  
-  CKeyValuePair* keyValuePairForKey(string strKey);
-  
   designator_integration_msgs::Designator serializeToMessage();
-  vector<designator_integration_msgs::KeyValuePair> serializeKeyValuePair(CKeyValuePair *ckvpSerialize, int nParent, int nHighestID);
-  
-  CKeyValuePair* getPairForKey(string strKey);
-  
-  string getStringValue(string strKey);
-  float getFloatValue(string strKey);
-  geometry_msgs::PoseStamped getPoseStampedValue(string strKey);
 };
 
 

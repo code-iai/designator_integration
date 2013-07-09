@@ -297,3 +297,82 @@ vector<designator_integration_msgs::KeyValuePair> CKeyValuePair::serializeToMess
   
   return vecReturn;
 }
+
+CKeyValuePair* CKeyValuePair::childForKey(string strKey) {
+  CKeyValuePair *ckvpReturn = NULL;
+  
+  for(list<CKeyValuePair*>::iterator itKVP = m_lstChildren.begin();
+      itKVP != m_lstChildren.end();
+      itKVP++) {
+    CKeyValuePair *ckvpCurrent = *itKVP;
+    
+    if(strcasecmp(ckvpCurrent->key().c_str(), strKey.c_str()) == 0) {
+      ckvpReturn = ckvpCurrent;
+      break;
+    }
+  }
+  
+  return ckvpReturn;
+}
+
+string CKeyValuePair::stringValue(string strChildKey) {
+  CKeyValuePair *ckvpChild = this->childForKey(strChildKey);
+  
+  if(ckvpChild) {
+    return ckvpChild->stringValue();
+  }
+  
+  return "";
+}
+
+float CKeyValuePair::floatValue(string strChildKey) {
+  CKeyValuePair *ckvpChild = this->childForKey(strChildKey);
+  
+  if(ckvpChild) {
+    return ckvpChild->floatValue();
+  }
+  
+  return 0.0;
+}
+
+void CKeyValuePair::setStringValue(string strKey, string strValue) {
+  CKeyValuePair *ckvpChild = this->childForKey(strKey);
+  
+  if(ckvpChild) {
+    ckvpChild->setValue(strValue);
+  } else {
+    this->addChild(strKey, strValue);
+  }
+}
+
+void CKeyValuePair::setFloatValue(string strKey, float fValue) {
+  CKeyValuePair *ckvpChild = this->childForKey(strKey);
+  
+  if(ckvpChild) {
+    ckvpChild->setValue(fValue);
+  } else {
+    this->addChild(strKey, fValue);
+  }
+}
+
+void CKeyValuePair::setPoseStampedValue(string strKey, geometry_msgs::PoseStamped psPoseStampedValue) {
+  CKeyValuePair *ckvpChild = this->childForKey(strKey);
+  
+  if(ckvpChild) {
+    ckvpChild->setValue(psPoseStampedValue);
+  } else {
+    this->addChild(strKey, psPoseStampedValue);
+  }
+}
+
+void CKeyValuePair::setValue(string strKey, string strValue) {
+  this->setStringValue(strKey, strValue);
+}
+
+void CKeyValuePair::setValue(string strKey, float fValue) {
+  this->setFloatValue(strKey, fValue);
+}
+
+void CKeyValuePair::setValue(string strKey, geometry_msgs::PoseStamped psPoseStampedValue) {
+  this->setPoseStampedValue(strKey, psPoseStampedValue);
+}
