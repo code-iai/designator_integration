@@ -76,7 +76,8 @@ add_executable(designator_integration_node
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(designator_integration_node designator_integration_generate_messages_cpp)
+add_dependencies(DesignatorIntegration designator_integration_generate_messages_cpp message_generation message_runtime)
+add_dependencies(designator_integration_node designator_integration_generate_messages_cpp message_generation message_runtime)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(designator_integration_node
