@@ -296,6 +296,8 @@ void CKeyValuePair::setValue(char *acValue, unsigned int unLength) {
   
   m_acValue = new char[unLength]();
   memcpy(m_acValue, acValue, unLength);
+  
+  this->setType(DATA);
 }
 
 void CKeyValuePair::setKey(string strKey) {
