@@ -22,6 +22,12 @@ CKeyValuePair::CKeyValuePair(string strKey, float fValue) {
   this->setValue(fValue);
 }
 
+CKeyValuePair::CKeyValuePair(string strKey, char *acValue, unsigned int unLength) {
+  this->init();
+  this->setKey(strKey);
+  this->setValue(acValue, unLength);
+}
+
 CKeyValuePair::CKeyValuePair(designator_integration_msgs::KeyValuePair kvpContent) {
   this->init();
   this->fillWithKeyValueContent(kvpContent);
@@ -40,9 +46,7 @@ CKeyValuePair::CKeyValuePair(string strKey, geometry_msgs::Pose posPoseValue) {
 }
 
 CKeyValuePair::~CKeyValuePair() {
-  if(m_acData != NULL) {
-    delete[] m_acData;
-  }
+  this->clearDataValue();
 }
 
 void CKeyValuePair::init() {
@@ -51,7 +55,8 @@ void CKeyValuePair::init() {
   m_strValue = "";
   m_fValue = 0.0;
   m_evtType = STRING;
-  m_acData = NULL;
+  m_acValue = NULL;
+  m_unValueLength = 0;
 }
 
 void CKeyValuePair::fillWithKeyValueContent(designator_integration_msgs::KeyValuePair kvpContent) {
@@ -64,7 +69,14 @@ void CKeyValuePair::fillWithKeyValueContent(designator_integration_msgs::KeyValu
   m_fValue = kvpContent.value_float;
   m_psPoseStampedValue = kvpContent.value_posestamped;
   m_posPoseValue = kvpContent.value_pose;
-  // Add 'data' field here as well.
+  
+  m_unValueLength = kvpContent.value_data.size();
+  if(m_unValueLength > 0) {
+    m_acValue = new char[m_unValueLength]();
+    for(int nI = 0; nI < m_unValueLength; nI++) {
+      m_acValue[nI] = kvpContent.value_data[nI];
+    }
+  }
 }
 
 enum ValueType CKeyValuePair::type() {
@@ -77,6 +89,20 @@ string CKeyValuePair::stringValue() {
 
 float CKeyValuePair::floatValue() {
   return m_fValue;
+}
+
+char *CKeyValuePair::dataValue() {
+  return m_acValue;
+}
+
+unsigned int CKeyValuePair::dataValueLength() {
+  return m_unValueLength;
+}
+
+char *CKeyValuePair::dataValue(unsigned int &unLength) {
+  unLength = this->dataValueLength();
+  
+  return this->dataValue();
 }
 
 geometry_msgs::PoseStamped CKeyValuePair::poseStampedValue() {
@@ -257,6 +283,21 @@ void CKeyValuePair::setValue(geometry_msgs::Pose posPoseValue) {
   this->setType(POSE);
 }
 
+void CKeyValuePair::clearDataValue() {
+  if(m_acValue != NULL) {
+    delete[] m_acValue;
+    m_acValue = NULL;
+    m_unValueLength = 0;
+  }
+}
+
+void CKeyValuePair::setValue(char *acValue, unsigned int unLength) {
+  this->clearDataValue();
+  
+  m_acValue = new char[unLength]();
+  memcpy(m_acValue, acValue, unLength);
+}
+
 void CKeyValuePair::setKey(string strKey) {
   m_strKey = strKey;
 }
@@ -293,6 +334,13 @@ CKeyValuePair *CKeyValuePair::addChild(string strKey, geometry_msgs::Pose posPos
   return ckvpNewChild;
 }
 
+CKeyValuePair *CKeyValuePair::addChild(string strKey, char *acValue, unsigned int unLength) {
+  CKeyValuePair *ckvpNewChild = this->addChild(strKey);
+  ckvpNewChild->setValue(acValue, unLength);
+  
+  return ckvpNewChild;
+}
+
 vector<designator_integration_msgs::KeyValuePair> CKeyValuePair::serializeToMessage(int nParent, int nID) {
   vector<designator_integration_msgs::KeyValuePair> vecReturn;
   designator_integration_msgs::KeyValuePair kvpSerialized;
@@ -310,6 +358,10 @@ vector<designator_integration_msgs::KeyValuePair> CKeyValuePair::serializeToMess
   kvpSerialized.value_float = m_fValue;
   kvpSerialized.value_posestamped = m_psPoseStampedValue;
   kvpSerialized.value_pose = m_posPoseValue;
+  
+  for(int nI = 0; nI < m_unValueLength; nI++) {
+    kvpSerialized.value_data.push_back(m_acValue[nI]);
+  }
   
   vecReturn.push_back(kvpSerialized);
   
