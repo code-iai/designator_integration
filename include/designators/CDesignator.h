@@ -35,6 +35,12 @@ class CDesignator : public CKeyValuePair {
  public:
   CDesignator();
   CDesignator(designator_integration_msgs::Designator desigContent);
+  CDesignator(enum DesignatorType edtType, CKeyValuePair* ckvpDescription);
+  CDesignator(enum DesignatorType edtType, list<CKeyValuePair*> lstDescription);
+  
+  void fillFromDescription(enum DesignatorType edtType, list<CKeyValuePair*> lstDescription);
+  void setDescription(list<CKeyValuePair*> lstDescription);
+  list<CKeyValuePair*> description();
   
   void setType(enum DesignatorType edtType);
   

@@ -14,12 +14,15 @@ using namespace std;
 
 
 enum ValueType {
-  STRING = 0,
-  FLOAT = 1,
-  DATA = 2,
-  LIST = 3,
-  POSESTAMPED = 4,
-  POSE = 5
+  STRING = designator_integration_msgs::KeyValuePair::TYPE_STRING,
+  FLOAT = designator_integration_msgs::KeyValuePair::TYPE_FLOAT,
+  DATA = designator_integration_msgs::KeyValuePair::TYPE_DATA,
+  LIST = designator_integration_msgs::KeyValuePair::TYPE_LIST,
+  POSESTAMPED = designator_integration_msgs::KeyValuePair::TYPE_POSESTAMPED,
+  POSE = designator_integration_msgs::KeyValuePair::TYPE_POSE,
+  DESIGNATOR_ACTION = designator_integration_msgs::KeyValuePair::TYPE_DESIGNATOR_ACTION,
+  DESIGNATOR_OBJECT = designator_integration_msgs::KeyValuePair::TYPE_DESIGNATOR_OBJECT,
+  DESIGNATOR_LOCATION = designator_integration_msgs::KeyValuePair::TYPE_DESIGNATOR_LOCATION
 };
 
 
@@ -106,6 +109,8 @@ class CKeyValuePair {
   CKeyValuePair *childForKey(string strKey);
   
   void clear();
+  
+  CKeyValuePair* copy();
 };
 
 

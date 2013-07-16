@@ -9,6 +9,35 @@ CDesignator::CDesignator(designator_integration_msgs::Designator desigContent) {
   this->fillFromDesignatorMsg(desigContent);
 }
 
+CDesignator::CDesignator(enum DesignatorType edtType, CKeyValuePair* ckvpDescription) {
+  this->fillFromDescription(edtType, ckvpDescription->children());
+}
+
+CDesignator::CDesignator(enum DesignatorType edtType, list<CKeyValuePair*> lstDescription) {
+  this->fillFromDescription(edtType, lstDescription);
+}
+
+void CDesignator::fillFromDescription(enum DesignatorType edtType, list<CKeyValuePair*> lstDescription) {
+  list<CKeyValuePair*> lstDescriptionNew;
+  
+  for(list<CKeyValuePair*>::iterator itKVP = lstDescription.begin();
+      itKVP != lstDescription.end();
+      itKVP++) {
+    lstDescriptionNew.push_back((*itKVP)->copy());
+  }
+  
+  this->setDescription(lstDescriptionNew);
+  this->setType(edtType);
+}
+
+void CDesignator::setDescription(list<CKeyValuePair*> lstDescription) {
+  m_lstChildren = lstDescription;
+}
+
+list<CKeyValuePair*> CDesignator::description() {
+  return m_lstChildren;
+}
+
 void CDesignator::setType(enum DesignatorType edtType) {
   m_edtType = edtType;
 }

@@ -50,6 +50,9 @@ int main(int argc, char **argv) {
   desigTest->setValue("test-value", 1.9);
   desigTest->printDesignator();
   
+  CDesignator *desigCopied = new CDesignator(LOCATION, desigTest->childForKey("subnode"));
+  desigCopied->printDesignator();
+  
   delete desigTest;
   
   ros::spin();

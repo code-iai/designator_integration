@@ -491,3 +491,26 @@ void CKeyValuePair::setValue(string strKey, geometry_msgs::Pose posPoseValue) {
 void CKeyValuePair::clear() {
   m_lstChildren.clear();
 }
+
+CKeyValuePair* CKeyValuePair::copy() {
+  CKeyValuePair *ckvpCopy = new CKeyValuePair();
+  
+  ckvpCopy->setValue(this->stringValue());
+  ckvpCopy->setValue(this->floatValue());
+  ckvpCopy->setValue(this->poseStampedValue());
+  ckvpCopy->setValue(this->poseValue());
+  ckvpCopy->setValue(this->dataValue(), this->dataValueLength());
+  ckvpCopy->setType(this->type());
+  
+  ckvpCopy->setKey(this->key());
+  ckvpCopy->setParent(this->parent());
+  ckvpCopy->setID(this->id());
+  
+  for(list<CKeyValuePair*>::iterator itChild = m_lstChildren.begin();
+      itChild != m_lstChildren.end();
+      itChild++) {
+    ckvpCopy->addChild((*itChild)->copy());
+  }
+  
+  return ckvpCopy;
+}
