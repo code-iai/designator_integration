@@ -46,46 +46,69 @@
      ;; It is a single pair
      (let* ((key (string (car desc)))
             (value (car (cdr desc)))
-            (type (cond ((or (symbolp value)
-                             (stringp value)) 0)
-                        ((numberp value) 1)
-                        (t 3)))
+            (type
+              (cond
+                ((or (symbolp value)
+                     (stringp value)) 0)
+                ((numberp value) 1)
+                ((eql (type-of value) 'geometry_msgs-msg:posestamped) 4)
+                ((eql (type-of value) 'geometry_msgs-msg:pose) 5)
+                ((eql (type-of value) 'cram-designators:action-designator) 6)
+                ((eql (type-of value) 'cram-designators:object-designator) 7)
+                ((eql (type-of value) 'cram-designators:location-designator) 8)
+                (t 3))) ;; Default: list
             (new-index (+ index 1)))
-       (cond ((eql (type-of value) 'common-lisp:cons)
-              ;; Value is list
-              (multiple-value-bind
-                    (msgs high-index)
-                  (description->msg
-                   value :index new-index
-                         :parent new-index)
+       (let ((type (cond ((or (eql type 6) (eql type 7) (eql type 8)) 3)
+                         (t type))) ;; Treat designators as lists
+             (value (cond ((or (eql type 6) (eql type 7) (eql type 8))
+                           (description value))
+                          (t value)))) ;; Take designator's description as list
+         (cond ((eql (type-of value) 'common-lisp:cons)
+                ;; Value is list
+                (multiple-value-bind
+                      (msgs high-index)
+                    (description->msg
+                     value :index new-index
+                           :parent new-index)
+                  (values
+                   (append
+                    (list
+                     (roslisp:make-message
+                      "designator_integration_msgs/KeyValuePair"
+                      :id new-index
+                      :parent parent
+                      :key key
+                      :type type))
+                    msgs)
+                   (max new-index high-index))))
+               (t
+                ;; Value is symbol/number/string/pose(stamped)
                 (values
-                 (append
-                  (list
-                   (roslisp:make-message
-                    "designator_integration_msgs/KeyValuePair"
-                    :id new-index
-                    :parent parent
-                    :key key
-                    :type type))
-                  msgs)
-                 (max new-index high-index))))
-             (t
-              ;; Value is symbol/number/string
-              (values
-               (roslisp:make-message
-                "designator_integration_msgs/KeyValuePair"
-                :id new-index
-                :parent parent
-                :key key
-                :type type
-                :value_string (cond ((or (symbolp value)
-                                         (stringp value))
-                                     (string value))
-                                    (t ""))
-                :value_float (cond ((numberp value)
-                                    value)
-                                   (t 0.0)))
-               new-index)))))
+                 (roslisp:make-message
+                  "designator_integration_msgs/KeyValuePair"
+                  :id new-index
+                  :parent parent
+                  :key key
+                  :type type
+                  :value_string (cond ((or (symbolp value)
+                                           (stringp value))
+                                       (string value))
+                                      (t ""))
+                  :value_float (cond ((numberp value)
+                                      value)
+                                     (t 0.0))
+                  :value_posestamped
+                  (cond ((eql (type-of value) 'geometry_msgs-msg:posestamped)
+                         value)
+                        (t (tf:pose-stamped->msg
+                            (tf:pose->pose-stamped
+                             "" 0.0
+                             (tf:make-identity-pose)))))
+                  :value_pose
+                  (cond ((eql (type-of value) 'geometry_msgs-msg:pose)
+                         value)
+                        (t (tf:pose->msg (tf:make-identity-pose)))))
+                 new-index))))))
     (common-lisp:cons
      ;; It is a list of pairs
      (let ((index index))
@@ -116,7 +139,7 @@
 
 (defun msg->description (msg)
   (roslisp:with-fields
-      (type key value_string value_float value_posestamped) msg
+      (type key value_string value_float value_posestamped value_pose) msg
     (append
      `(,(intern (string-upcase key)
                 'cram-designator-properties))
@@ -124,7 +147,8 @@
        (0 (list value_string))
        (1 (list value_float))
        (3 `())
-       (4 (list value_posestamped))))))
+       (4 (list value_posestamped))
+       (5 (list value_pose))))))
 
 (defun msg->designator (msg)
   (roslisp:with-fields (type description) msg
