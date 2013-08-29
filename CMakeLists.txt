@@ -4,11 +4,10 @@ project(designator_integration)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS designator_integration_msgs geometry_msgs roscpp)
+find_package(catkin REQUIRED COMPONENTS designator_integration_msgs roscpp)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -34,11 +33,11 @@ find_package(catkin REQUIRED COMPONENTS designator_integration_msgs geometry_msg
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-  designator_integration_msgs
-  geometry_msgs
-)
+#generate_messages(
+#  DEPENDENCIES
+#  designator_integration_msgs
+#  geometry_msgs
+#)
 
 ###################################
 ## catkin specific configuration ##
@@ -51,7 +50,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES designator_integration
-  CATKIN_DEPENDS designator_integration_msgs geometry_msgs roscpp
+  CATKIN_DEPENDS designator_integration_msgs roscpp
 #  DEPENDS system_lib
 )
 
@@ -76,8 +75,8 @@ add_executable(designator_integration_node
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(DesignatorIntegration designator_integration_generate_messages_cpp message_generation message_runtime)
-add_dependencies(designator_integration_node designator_integration_generate_messages_cpp message_generation message_runtime)
+add_dependencies(DesignatorIntegration designator_integration_msgs_gencpp)
+add_dependencies(designator_integration_node designator_integration_msgs_gencpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(designator_integration_node
