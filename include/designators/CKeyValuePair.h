@@ -81,6 +81,7 @@ class CKeyValuePair {
   void setValue(geometry_msgs::PoseStamped psPoseStampedValue);
   void setValue(geometry_msgs::Pose psPoseValue);
   void setValue(char *acValue, unsigned int unLength);
+  void setValue(enum ValueType evtType, list<CKeyValuePair*> lstDescription);
   void clearDataValue();
   
   void setValue(string strKey, string strValue);
@@ -88,6 +89,12 @@ class CKeyValuePair {
   void setValue(string strKey, geometry_msgs::PoseStamped psPoseStampedValue);
   void setValue(string strKey, geometry_msgs::Pose psPoseValue);
   void setValue(string strKey, char *acValue, int nLength);
+  
+  // Adding designator descriptions as values
+  void setValue(string strKey, enum ValueType evtType, list<CKeyValuePair*> lstDescription);
+  void setLocationDesignatorDescription(string strKey, enum ValueType evtType, list<CKeyValuePair*> lstDescription);
+  void setActionDesignatorDescription(string strKey, list<CKeyValuePair*> lstDescription);
+  void setObjectDesignatorDescription(string strKey, list<CKeyValuePair*> lstDescription);
   
   void setKey(string strKey);
   void setType(enum ValueType evtType);
@@ -104,6 +111,7 @@ class CKeyValuePair {
   CKeyValuePair *addChild(string strKey, geometry_msgs::PoseStamped psPoseStampedValue);
   CKeyValuePair *addChild(string strKey, geometry_msgs::Pose psPoseValue);
   CKeyValuePair *addChild(string strKey, char *acValue, unsigned int unLength);
+  CKeyValuePair *addChild(string strKey, enum ValueType evtType, list<CKeyValuePair*> lstDescription);
   
   vector<designator_integration_msgs::KeyValuePair> serializeToMessage(int nParent, int nID);
   CKeyValuePair *childForKey(string strKey);

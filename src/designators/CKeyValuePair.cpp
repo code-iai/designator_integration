@@ -158,7 +158,25 @@ void CKeyValuePair::printPair(int nSpaceOffset, bool bOffsetRegular, bool bNewli
     cout << m_fValue << ")";
   } break;
     
+  case DESIGNATOR_ACTION:
+  case DESIGNATOR_OBJECT:
+  case DESIGNATOR_LOCATION:
   case LIST: {
+    string strPrefix;
+    switch(m_evtType) {
+    case DESIGNATOR_ACTION:
+      strPrefix = "<action (";
+      break;
+    case DESIGNATOR_OBJECT:
+      strPrefix = "<object (";
+      break;
+    case DESIGNATOR_LOCATION:
+      strPrefix = "<location (";
+      break;
+    case LIST:
+      strPrefix = "(";
+      break;
+    }
     cout << "(";
     bool bFirst = true;
     
@@ -298,6 +316,40 @@ void CKeyValuePair::setValue(char *acValue, unsigned int unLength) {
   memcpy(m_acValue, acValue, unLength);
   
   this->setType(DATA);
+}
+
+void CKeyValuePair::setValue(string strKey, enum ValueType evtType, list<CKeyValuePair*> lstDescription) {
+  CKeyValuePair *ckvpChild = this->childForKey(strKey);
+  
+  if(ckvpChild) {
+    ckvpChild->setValue(evtType, lstDescription);
+  } else {
+    this->addChild(strKey, evtType, lstDescription);
+  }
+}
+
+void CKeyValuePair::setValue(enum ValueType evtType, list<CKeyValuePair*> lstDescription) {
+  m_lstChildren = lstDescription;
+  this->setType(evtType);
+}
+
+CKeyValuePair* CKeyValuePair::addChild(string strKey, enum ValueType evtType, list<CKeyValuePair*> lstDescription) {
+  CKeyValuePair *ckvpNewChild = this->addChild(strKey);
+  ckvpNewChild->setValue(evtType, lstDescription);
+  
+  return ckvpNewChild;
+}
+
+void CKeyValuePair::setLocationDesignatorDescription(string strKey, enum ValueType evtType, list<CKeyValuePair*> lstDescription) {
+  this->setValue(strKey, DESIGNATOR_LOCATION, lstDescription);
+}
+
+void CKeyValuePair::setActionDesignatorDescription(string strKey, list<CKeyValuePair*> lstDescription) {
+  this->setValue(strKey, DESIGNATOR_ACTION, lstDescription);
+}
+
+void CKeyValuePair::setObjectDesignatorDescription(string strKey, list<CKeyValuePair*> lstDescription) {
+  this->setValue(strKey, DESIGNATOR_OBJECT, lstDescription);
 }
 
 void CKeyValuePair::setKey(string strKey) {
