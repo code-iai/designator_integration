@@ -53,6 +53,8 @@
                 ((numberp value) 1)
                 ((eql (type-of value) 'geometry_msgs-msg:posestamped) 4)
                 ((eql (type-of value) 'geometry_msgs-msg:pose) 5)
+                ((eql (type-of value) 'cl-tf:pose) 5)
+                ((eql (type-of value) 'cl-tf:pose-stamped) 4)
                 ((eql (type-of value) 'cram-designators:action-designator) 6)
                 ((eql (type-of value) 'cram-designators:object-designator) 7)
                 ((eql (type-of value) 'cram-designators:location-designator) 8)
@@ -100,6 +102,8 @@
                   :value_posestamped
                   (cond ((eql (type-of value) 'geometry_msgs-msg:posestamped)
                          value)
+                        ((eql (type-of value) 'cl-tf:pose-stamped)
+                         (tf:pose-stamped->msg value))
                         (t (tf:pose-stamped->msg
                             (tf:pose->pose-stamped
                              "" 0.0
@@ -107,6 +111,8 @@
                   :value_pose
                   (cond ((eql (type-of value) 'geometry_msgs-msg:pose)
                          value)
+                        ((eql (type-of value) 'cl-tf:pose)
+                         (tf:pose->msg value))
                         (t (tf:pose->msg (tf:make-identity-pose)))))
                  new-index))))))
     (common-lisp:cons
