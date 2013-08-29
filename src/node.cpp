@@ -48,14 +48,20 @@ int main(int argc, char **argv) {
   desigTest->setValue("shape", "box");
   desigTest->setValue("color", "red");
   
+  bool bSent = false;
+  
   while(ros::ok()) {
     ros::spinOnce();
-    pub.publish(desigTest->serializeToMessage());
     
-    cout << "Sent this designator to topic '" << strTopic << "':" << endl;
-    desigTest->printDesignator();
+    if(!bSent) {
+      pub.publish(desigTest->serializeToMessage());
+      
+      cout << "Sent this designator to topic '" << strTopic << "':" << endl;
+      desigTest->printDesignator();
+      bSent = true;
+    }
     
-    ros::Duration(2.0).sleep();
+    ros::Duration(0.1).sleep();
   }
   
   delete desigTest;
