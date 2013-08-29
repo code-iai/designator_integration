@@ -11,6 +11,9 @@
 using namespace std;
 
 
+ros::Publisher pub;
+
+
 bool desigCommCB(designator_integration_msgs::DesignatorCommunication::Request &req,
 		 designator_integration_msgs::DesignatorCommunication::Response &res) {
   CDesignator *desigRequest = new CDesignator(req.request.designator);
@@ -29,33 +32,33 @@ bool desigCommCB(designator_integration_msgs::DesignatorCommunication::Request &
   return true;
 }
 
-
 int main(int argc, char **argv) {
   ros::init(argc, argv, "desig_int_test");
   ros::NodeHandle nhPrivate("~");
+  ros::NodeHandle nh;
   ros::ServiceServer srvDesigComm = nhPrivate.advertiseService("/designator_comm",
 							       desigCommCB);
   
+  string strTopic = "/uima/trigger";
+  pub = nh.advertise<designator_integration_msgs::Designator>(strTopic, 1);
+  
   CDesignator *desigTest = new CDesignator();
+  desigTest->setType(ACTION);
   
-  desigTest->setValue("test", "value");
-  desigTest->setValue("test2", 0.5);
-  CKeyValuePair *c1 = desigTest->addChild("subnode");
-  c1->setValue("val1", 0.3);
-  c1->setValue("val2", "somevalue");
-  CKeyValuePair *c2 = c1->addChild("subnode-second-level");
-  c2->setValue("val3", "wow");
-  c2->setValue("val4", "wow2");
-  c1->setValue("val5", "somevalue2");
-  desigTest->setValue("test-value", 1.9);
-  desigTest->printDesignator();
+  desigTest->setValue("shape", "box");
+  desigTest->setValue("color", "red");
   
-  CDesignator *desigCopied = new CDesignator(LOCATION, desigTest->childForKey("subnode"));
-  desigCopied->printDesignator();
+  while(ros::ok()) {
+    ros::spinOnce();
+    pub.publish(desigTest->serializeToMessage());
+    
+    cout << "Sent this designator to topic '" << strTopic << "':" << endl;
+    desigTest->printDesignator();
+    
+    ros::Duration(2.0).sleep();
+  }
   
   delete desigTest;
-  
-  ros::spin();
   
   return 0;
 }
