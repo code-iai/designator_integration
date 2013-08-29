@@ -119,6 +119,8 @@ class CKeyValuePair {
   void clear();
   
   CKeyValuePair* copy();
+  
+  list<string> keys();
 };
 
 

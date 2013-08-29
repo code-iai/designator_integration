@@ -566,3 +566,16 @@ CKeyValuePair* CKeyValuePair::copy() {
   
   return ckvpCopy;
 }
+
+list<string> CKeyValuePair::keys() {
+  list<string> lstKeys;
+  list<CKeyValuePair*> lstChildren = this->children();
+  
+  for(list<CKeyValuePair*>::iterator itPair = lstChildren.begin();
+      itPair != lstChildren.end();
+      itPair++) {
+    lstKeys.push_back((*itPair)->key());
+  }
+  
+  return lstKeys;
+}
