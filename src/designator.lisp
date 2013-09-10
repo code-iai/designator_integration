@@ -63,7 +63,12 @@
        (let ((type (cond ((or (eql type 6) (eql type 7) (eql type 8)) 3)
                          (t type))) ;; Treat designators as lists
              (value (cond ((or (eql type 6) (eql type 7) (eql type 8))
-                           (description value))
+                           (append (description value)
+                                   (list `(_designator_type
+                                           ,(case type
+                                              (6 'action)
+                                              (7 'object)
+                                              (8 'location))))))
                           (t value)))) ;; Take designator's description as list
          (cond ((eql (type-of value) 'common-lisp:cons)
                 ;; Value is list
