@@ -84,11 +84,51 @@ enum ValueType CKeyValuePair::type() {
 }
 
 string CKeyValuePair::stringValue() {
-  return m_strValue;
+  // NOTE: Strings and floats can be returned as strings. Everything
+  // else turns into a blank string.
+  switch(m_evtType) {
+  case STRING: {
+    return m_strValue;
+  } break;
+    
+  case FLOAT: {
+    stringstream sts;
+    sts << m_fValue;
+    return sts.str();
+  } break;
+    
+  default: {
+    return "";
+  } break;
+  }
 }
 
 float CKeyValuePair::floatValue() {
-  return m_fValue;
+  // NOTE: Strings and floats can be returned as floats. Everything
+  // else turns into the float value 0.0f. Strings that are returned
+  // as floats must be valid number literals. If this is not the case,
+  // an error message will be printed and the value 0.0f will be
+  // returned.
+  switch(m_evtType) {
+  case STRING: {
+    float fValue = 0.0f;
+    if(sscanf(m_strValue.c_str(), "%f", &fValue) == EOF) {
+      // Something went wrong.
+      cerr << "Error while converting '" << m_strValue << "' to float." << endl;
+      return 0.0f;
+    } else {
+      return fValue;
+    }
+  } break;
+    
+  case FLOAT: {
+    return m_fValue;
+  } break;
+    
+  default: {
+    return 0.0f;
+  } break;
+  }
 }
 
 char *CKeyValuePair::dataValue() {
