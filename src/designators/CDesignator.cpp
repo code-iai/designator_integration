@@ -5,6 +5,11 @@ CDesignator::CDesignator() : CKeyValuePair() {
   this->m_edtType = UNKNOWN;
 }
 
+CDesignator::CDesignator(CDesignator* cdTemplate) {
+  this->setType(cdTemplate->type());
+  this->setDescription(cdTemplate->description());
+}
+
 CDesignator::CDesignator(designator_integration_msgs::Designator desigContent) {
   this->fillFromDesignatorMsg(desigContent);
 }
