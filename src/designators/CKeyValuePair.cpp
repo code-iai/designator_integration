@@ -195,7 +195,7 @@ void CKeyValuePair::printPair(int nSpaceOffset, bool bOffsetRegular, bool bNewli
   
   switch(m_evtType) {
   case STRING: {
-    cout << m_strValue << ")";
+    cout << "\"" << m_strValue << "\")";
   } break;
     
   case FLOAT: {
