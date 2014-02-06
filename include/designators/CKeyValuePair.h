@@ -99,7 +99,7 @@ class CKeyValuePair {
   void setKey(string strKey);
   void setType(enum ValueType evtType);
   
-  CKeyValuePair *addChild(string strKey);
+  CKeyValuePair *addChild(string strKey, bool bAppendNew = false);
   list<CKeyValuePair*> children();
   
   void printPair(int nSpaceOffset, bool bOffsetRegular = true, bool bNewline = true);

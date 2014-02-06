@@ -165,8 +165,12 @@ string CKeyValuePair::key() {
   return m_strKey;
 }
 
-CKeyValuePair *CKeyValuePair::addChild(string strKey) {
-  CKeyValuePair *ckvpNewChild = this->childForKey(strKey);
+CKeyValuePair *CKeyValuePair::addChild(string strKey, bool bAppendNew) {
+  CKeyValuePair *ckvpNewChild = NULL;
+  
+  if(!bAppendNew) {
+    ckvpNewChild = this->childForKey(strKey);
+  }
   
   if(!ckvpNewChild) {
     ckvpNewChild = new CKeyValuePair();
@@ -196,6 +200,33 @@ void CKeyValuePair::printPair(int nSpaceOffset, bool bOffsetRegular, bool bNewli
     
   case FLOAT: {
     cout << m_fValue << ")";
+  } break;
+    
+  case POSE: {
+    cout << "[pose: [position: "
+	 << m_posPoseValue.position.x << ", "
+	 << m_posPoseValue.position.y << ", "
+	 << m_posPoseValue.position.z << "], "
+	 << "[orientation: "
+	 << m_posPoseValue.orientation.x << ", "
+	 << m_posPoseValue.orientation.y << ", "
+	 << m_posPoseValue.orientation.z << ", "
+	 << m_posPoseValue.orientation.w << "]])";
+  } break;
+    
+  case POSESTAMPED: {
+    cout << "[pose: "
+	 << "[stamp: " << m_psPoseStampedValue.header.stamp.toSec() << "], "
+	 << "[frame-id: " << m_psPoseStampedValue.header.frame_id << "], "
+	 << "[position: "
+	 << m_psPoseStampedValue.pose.position.x << ", "
+	 << m_psPoseStampedValue.pose.position.y << ", "
+	 << m_psPoseStampedValue.pose.position.z << "], "
+	 << "[orientation: "
+	 << m_psPoseStampedValue.pose.orientation.x << ", "
+	 << m_psPoseStampedValue.pose.orientation.y << ", "
+	 << m_psPoseStampedValue.pose.orientation.z << ", "
+	 << m_psPoseStampedValue.pose.orientation.w << "]])";
   } break;
     
   case DESIGNATOR_ACTION:
