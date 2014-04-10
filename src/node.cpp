@@ -48,6 +48,12 @@ int main(int argc, char **argv) {
   desigTest->setValue("shape", "box");
   desigTest->setValue("color", "red");
   
+  CKeyValuePair* ckvpTest1 = desigTest->addChild("GRASP-POSE", true);
+  ckvpTest1->setValue("test-content 1");
+
+  CKeyValuePair* ckvpTest2 = desigTest->addChild("GRASP-POSE", true);
+  ckvpTest2->setValue("test-content 2");
+  
   bool bSent = false;
   
   while(ros::ok()) {

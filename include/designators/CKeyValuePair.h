@@ -65,9 +65,9 @@ class CKeyValuePair {
   geometry_msgs::PoseStamped poseStampedValue(string strChildKey);
   geometry_msgs::Pose poseValue();
   geometry_msgs::Pose poseValue(string strChildKey);
-  char *dataValue();
+  char* dataValue();
   unsigned int dataValueLength();
-  char *dataValue(unsigned int &unLength);
+  char* dataValue(unsigned int &unLength);
   
   int id();
   int parent();
@@ -80,7 +80,7 @@ class CKeyValuePair {
   void setValue(float fValue);
   void setValue(geometry_msgs::PoseStamped psPoseStampedValue);
   void setValue(geometry_msgs::Pose psPoseValue);
-  void setValue(char *acValue, unsigned int unLength);
+  void setValue(void* vdValue, unsigned int unLength);
   void setValue(enum ValueType evtType, list<CKeyValuePair*> lstDescription);
   void clearDataValue();
   

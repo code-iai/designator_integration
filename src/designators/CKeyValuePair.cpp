@@ -22,7 +22,7 @@ CKeyValuePair::CKeyValuePair(string strKey, float fValue) {
   this->setValue(fValue);
 }
 
-CKeyValuePair::CKeyValuePair(string strKey, char *acValue, unsigned int unLength) {
+CKeyValuePair::CKeyValuePair(string strKey, char* acValue, unsigned int unLength) {
   this->init();
   this->setKey(strKey);
   this->setValue(acValue, unLength);
@@ -131,7 +131,7 @@ float CKeyValuePair::floatValue() {
   }
 }
 
-char *CKeyValuePair::dataValue() {
+char* CKeyValuePair::dataValue() {
   return m_acValue;
 }
 
@@ -139,7 +139,7 @@ unsigned int CKeyValuePair::dataValueLength() {
   return m_unValueLength;
 }
 
-char *CKeyValuePair::dataValue(unsigned int &unLength) {
+char* CKeyValuePair::dataValue(unsigned int &unLength) {
   unLength = this->dataValueLength();
   
   return this->dataValue();
@@ -380,11 +380,11 @@ void CKeyValuePair::clearDataValue() {
   }
 }
 
-void CKeyValuePair::setValue(char *acValue, unsigned int unLength) {
+void CKeyValuePair::setValue(void* vdValue, unsigned int unLength) {
   this->clearDataValue();
   
   m_acValue = new char[unLength]();
-  memcpy(m_acValue, acValue, unLength);
+  memcpy(m_acValue, vdValue, unLength);
   
   this->setType(DATA);
 }
