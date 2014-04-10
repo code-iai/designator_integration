@@ -2,7 +2,7 @@
 
 
 CDesignator::CDesignator() : CKeyValuePair() {
-  this->m_edtType = UNKNOWN;
+  this->m_edtType = OBJECT;
 }
 
 CDesignator::CDesignator(CDesignator* cdTemplate) {
@@ -15,7 +15,11 @@ CDesignator::CDesignator(designator_integration_msgs::Designator desigContent) {
 }
 
 CDesignator::CDesignator(enum DesignatorType edtType, CKeyValuePair* ckvpDescription) {
-  this->fillFromDescription(edtType, ckvpDescription->children());
+  if(ckvpDescription) {
+    this->fillFromDescription(edtType, ckvpDescription->children());
+  } else {
+    this->setType(edtType);
+  }
 }
 
 CDesignator::CDesignator(enum DesignatorType edtType, list<CKeyValuePair*> lstDescription) {
