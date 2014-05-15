@@ -62,14 +62,17 @@
             (new-index (+ index 1)))
        (let ((type (cond ((or (eql type 6) (eql type 7) (eql type 8)) 3)
                          (t type))) ;; Treat designators as lists
-             (value (cond ((or (eql type 6) (eql type 7) (eql type 8))
+             (value (cond ((or (eql type 6) (eql type 7) (eql type 8)) ;; Take designator's description as list
                            (append (description value)
                                    (list `(_designator_type
                                            ,(case type
                                               (6 'action)
                                               (7 'object)
-                                              (8 'location))))))
-                          (t value)))) ;; Take designator's description as list
+                                              (8 'location))))
+                                   (list `(_designator_memory_address
+                                           ,(write-to-string
+                                             (sb-kernel:get-lisp-obj-address value))))))
+                          (t value))))
          (cond ((eql (type-of value) 'common-lisp:cons)
                 ;; Value is list
                 (multiple-value-bind
@@ -232,4 +235,6 @@
       (case type
         (0 (cram-designators:make-designator 'cram-designators:object final-tier))
         (1 (cram-designators:make-designator 'cram-designators:action final-tier))
-        (2 (cram-designators:make-designator 'cram-designators:location final-tier))))))
+        (2 (cram-designators:make-designator 'cram-designators:location final-tier))
+        (3 (cram-designators:make-designator 'cram-designators:object final-tier)) ;; Unknown -> assume an object
+        ))))
