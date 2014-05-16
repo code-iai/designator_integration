@@ -20,24 +20,23 @@ include_directories(include
 )
 
 ## Declare a cpp library
-add_library(DesignatorIntegration
+add_library(designator_integration
   src/designators/CDesignator.cpp
   src/designators/CKeyValuePair.cpp)
 
-## Declare a cpp executable
-#add_executable(designator_integration_node
-#  src/node.cpp)
+# ## Declare a cpp executable
+# add_executable(designator_integration_node
+#   src/node.cpp)
 
-## Add cmake target dependencies of the executable/library
-## as an example, message headers may need to be generated before nodes
-add_dependencies(DesignatorIntegration designator_integration_msgs_gencpp)
-#add_dependencies(designator_integration_node designator_integration_msgs_gencpp)
+# ## Add cmake target dependencies of the executable/library
+# ## as an example, message headers may need to be generated before nodes
+add_dependencies(designator_integration designator_integration_msgs_gencpp)
+# add_dependencies(designator_integration_node designator_integration_msgs_gencpp)
 
-## Specify libraries to link a library or executable target against
-#target_link_libraries(designator_integration_node
-#  ${catkin_LIBRARIES}
-#  DesignatorIntegration
-#)
+# ## Specify libraries to link a library or executable target against
+# target_link_libraries(designator_integration_node
+#   ${catkin_LIBRARIES}
+#   DesignatorIntegration)
 
 #############
 ## Install ##
