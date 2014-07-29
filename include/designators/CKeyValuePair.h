@@ -115,6 +115,7 @@ class CKeyValuePair {
   
   vector<designator_integration_msgs::KeyValuePair> serializeToMessage(int nParent, int nID);
   CKeyValuePair *childForKey(string strKey);
+  bool removeChildForKey(string strKey);
   
   void clear();
   

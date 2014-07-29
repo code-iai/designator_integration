@@ -529,6 +529,18 @@ CKeyValuePair* CKeyValuePair::childForKey(string strKey) {
   return ckvpReturn;
 }
 
+bool CKeyValuePair::removeChildForKey(string strKey) {
+  bool bResult = false;
+  
+  CKeyValuePair* ckvpChild = this->childForKey(strKey);
+  if(ckvpChild) {
+    m_lstChildren.remove(ckvpChild);
+    delete ckvpChild;
+  }
+  
+  return bResult;
+}
+
 string CKeyValuePair::stringValue(string strChildKey) {
   CKeyValuePair *ckvpChild = this->childForKey(strChildKey);
   
