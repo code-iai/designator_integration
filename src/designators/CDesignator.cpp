@@ -49,6 +49,26 @@ list<CKeyValuePair*> CDesignator::description() {
 
 void CDesignator::setType(enum DesignatorType edtType) {
   m_edtType = edtType;
+  
+  enum ValueType evtType = DESIGNATOR_OBJECT;
+  switch(edtType) {
+  case ACTION:
+    evtType = DESIGNATOR_ACTION;
+    break;
+    
+  case OBJECT:
+    evtType = DESIGNATOR_OBJECT;
+    break;
+    
+  case LOCATION:
+    evtType = DESIGNATOR_LOCATION;
+    break;
+    
+  default:
+    break;
+  }
+  
+  m_evtType = evtType;
 }
 
 void CDesignator::fillFromDesignatorMsg(designator_integration_msgs::Designator desigContent) {

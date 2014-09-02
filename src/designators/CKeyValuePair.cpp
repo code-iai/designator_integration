@@ -45,6 +45,11 @@ CKeyValuePair::CKeyValuePair(string strKey, geometry_msgs::Pose posPoseValue) {
   this->setValue(posPoseValue);
 }
 
+CKeyValuePair::CKeyValuePair(list<CKeyValuePair*> lstChildren) {
+  this->init();
+  this->setChildren(lstChildren);
+}
+
 CKeyValuePair::~CKeyValuePair() {
   this->clearDataValue();
 }
@@ -188,6 +193,10 @@ void CKeyValuePair::addChild(CKeyValuePair *ckvpChildAdd) {
 
 list<CKeyValuePair*> CKeyValuePair::children() {
   return m_lstChildren;
+}
+
+void CKeyValuePair::setChildren(list<CKeyValuePair*> lstChildren) {
+  m_lstChildren = lstChildren;
 }
 
 void CKeyValuePair::printPair(int nSpaceOffset, bool bOffsetRegular, bool bNewline) {

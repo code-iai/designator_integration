@@ -28,7 +28,6 @@ enum ValueType {
 
 class CKeyValuePair {
  private:
-  enum ValueType m_evtType;
   int m_nID;
   int m_nParent;
   string m_strKey;
@@ -40,6 +39,7 @@ class CKeyValuePair {
   geometry_msgs::PoseStamped m_psPoseStampedValue;
 
  protected:
+  enum ValueType m_evtType;
   list<CKeyValuePair*> m_lstChildren;
 
  public:
@@ -51,6 +51,7 @@ class CKeyValuePair {
   CKeyValuePair(string strKey, geometry_msgs::Pose posPoseValue);
   CKeyValuePair(string strKey, geometry_msgs::PoseStamped psPoseStampedValue);
   CKeyValuePair(designator_integration_msgs::KeyValuePair kvpContent);
+  CKeyValuePair(list<CKeyValuePair*> lstChildren);
   ~CKeyValuePair();
 
   void init();
@@ -101,6 +102,7 @@ class CKeyValuePair {
   
   CKeyValuePair *addChild(string strKey, bool bAppendNew = false);
   list<CKeyValuePair*> children();
+  void setChildren(list<CKeyValuePair*> lstChildren);
   
   void printPair(int nSpaceOffset, bool bOffsetRegular = true, bool bNewline = true);
   void printSpaces(int nSpaces);
