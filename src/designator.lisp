@@ -161,8 +161,8 @@
        (0 (list value_string))
        (1 (list value_float))
        (3 `())
-       (4 (list value_posestamped))
-       (5 (list value_pose))))))
+       (4 (list (tf:msg->pose-stamped value_posestamped)))
+       (5 (list (tf:msg->pose value_pose)))))))
 
 (defun msg->designator (msg)
   (roslisp:with-fields (type description) msg
