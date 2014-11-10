@@ -1,14 +1,15 @@
+// System
 #include <string>
 #include <iostream>
 #include <list>
 
+// ROS
 #include <ros/ros.h>
 #include <designator_integration_msgs/Designator.h>
 #include <designator_integration_msgs/DesignatorCommunication.h>
 
-#include <designators/CDesignator.h>
-
-using namespace std;
+// Designator Integration
+#include <designators/Designator.h>
 
 
 ros::Publisher pub;
@@ -16,8 +17,9 @@ ros::Publisher pub;
 
 bool desigCommCB(designator_integration_msgs::DesignatorCommunication::Request &req,
 		 designator_integration_msgs::DesignatorCommunication::Response &res) {
-  CDesignator *desigRequest = new CDesignator(req.request.designator);
-  CDesignator *desigResponse = new CDesignator();
+  designator_integration::Designator* desigRequest = new designator_integration::Designator(req.request.designator);
+  designator_integration::Designator* desigResponse = new designator_integration::Designator();
+  
   desigResponse->setType(OBJECT);
   desigResponse->setValue("name", desigRequest->stringValue("name"));
   desigResponse->setValue("height", 0.2);
@@ -39,19 +41,19 @@ int main(int argc, char **argv) {
   ros::ServiceServer srvDesigComm = nhPrivate.advertiseService("/designator_comm",
 							       desigCommCB);
   
-  string strTopic = "/uima/trigger";
+  std::string strTopic = "/uima/trigger";
   pub = nh.advertise<designator_integration_msgs::Designator>(strTopic, 1);
   
-  CDesignator *desigTest = new CDesignator();
+  designator_integration::Designator *desigTest = new designator_integration::Designator();
   desigTest->setType(ACTION);
   
   desigTest->setValue("shape", "box");
   desigTest->setValue("color", "red");
   
-  CKeyValuePair* ckvpTest1 = desigTest->addChild("GRASP-POSE", true);
+  designator_integration::KeyValuePair* ckvpTest1 = desigTest->addChild("GRASP-POSE", true);
   ckvpTest1->setValue("test-content 1");
 
-  CKeyValuePair* ckvpTest2 = desigTest->addChild("GRASP-POSE", true);
+  designator_integration::KeyValuePair* ckvpTest2 = desigTest->addChild("GRASP-POSE", true);
   ckvpTest2->setValue("test-content 2");
   
   bool bSent = false;
@@ -62,7 +64,7 @@ int main(int argc, char **argv) {
     if(!bSent) {
       pub.publish(desigTest->serializeToMessage());
       
-      cout << "Sent this designator to topic '" << strTopic << "':" << endl;
+      std::cout << "Sent this designator to topic '" << strTopic << "':" << std::endl;
       desigTest->printDesignator();
       bSent = true;
     }
