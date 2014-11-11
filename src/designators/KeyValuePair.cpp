@@ -468,7 +468,7 @@ namespace designator_integration {
     // Meta data
     kvpSerialized.key = m_strKey;
     kvpSerialized.type = (int)m_evtType;
-    kvpSerialized.is_atom = m_bIsAtom;
+    //kvpSerialized.is_atom = m_bIsAtom;
     
     // Values
     kvpSerialized.value_string = m_strValue;
