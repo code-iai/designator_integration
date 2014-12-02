@@ -40,29 +40,32 @@
                    (msg->designator x))
            designators)))))
 
+(defun value->type-code (value)
+  (cond
+    ((or (symbolp value)
+         (stringp value)) 0)
+    ((numberp value) 1)
+    ((eql (type-of value) 'geometry_msgs-msg:posestamped) 4)
+    ((eql (type-of value) 'geometry_msgs-msg:pose) 5)
+    ((eql (type-of value) 'cl-tf:pose) 5)
+    ((eql (type-of value) 'cl-tf:pose-stamped) 4)
+    ((eql (type-of value) 'cram-designators:action-designator) 6)
+    ((eql (type-of value) 'cram-designators:object-designator) 7)
+    ((eql (type-of value) 'cram-designators:location-designator) 8)
+    (t 3))) ;; Default: list
+
+(defun is-type-designator (type)
+  (or (eql type 6) (eql type 7) (eql type 8)))
+
 (defun description->msg (desc &key (index 0) (parent 0))
   (case (type-of (car desc))
     (common-lisp:symbol
      ;; It is a single pair
      (let* ((key (string (car desc)))
             (value (car (cdr desc)))
-            (type
-              (cond
-                ((or (symbolp value)
-                     (stringp value)) 0)
-                ((numberp value) 1)
-                ((eql (type-of value) 'geometry_msgs-msg:posestamped) 4)
-                ((eql (type-of value) 'geometry_msgs-msg:pose) 5)
-                ((eql (type-of value) 'cl-tf:pose) 5)
-                ((eql (type-of value) 'cl-tf:pose-stamped) 4)
-                ((eql (type-of value) 'cram-designators:action-designator) 6)
-                ((eql (type-of value) 'cram-designators:object-designator) 7)
-                ((eql (type-of value) 'cram-designators:location-designator) 8)
-                (t 3))) ;; Default: list
+            (type (value->type-code value))
             (new-index (+ index 1)))
-       (let ((type (cond ((or (eql type 6) (eql type 7) (eql type 8)) 3)
-                         (t type))) ;; Treat designators as lists
-             (value (cond ((or (eql type 6) (eql type 7) (eql type 8)) ;; Take designator's description as list
+       (let ((value (cond ((is-type-designator type) ;; Use designator's description as list
                            (append (description value)
                                    (list `(_designator_type
                                            ,(case type
@@ -91,6 +94,11 @@
                       :type type))
                     msgs)
                    (max new-index high-index))))
+               ((and (eql (type-of (type-of value)) 'common-lisp:cons)
+                     (eql (first (type-of value)) 'simple-vector))
+                ;; Value is nested list <-> vector
+                (list->msg (map 'list #'identity value) parent new-index
+                           :key key))
                (t
                 ;; Value is symbol/number/string/pose(stamped)
                 (values
@@ -136,6 +144,92 @@
                           msg)
               collect msg)
         index)))))
+
+(defun nested-list->msg (nested-list)
+  (roslisp:make-message
+   "designator_integration_msgs/Designator"
+   :type 3
+   :description
+   (map 'vector #'identity (list->msg nested-list 0 0))))
+
+(defun list-item->msg (value parent-index current-index)
+  (roslisp:make-message
+   "designator_integration_msgs/KeyValuePair"
+   :id current-index
+   :parent parent-index
+   :key ""
+   :type (value->type-code value)
+   :value_string (cond ((or (symbolp value)
+                            (stringp value))
+                        (string value))
+                       (t ""))
+   :value_float (cond ((numberp value)
+                       value)
+                      (t 0.0))
+   :value_posestamped
+   (cond ((eql (type-of value) 'geometry_msgs-msg:posestamped)
+          value)
+         ((eql (type-of value) 'cl-tf:pose-stamped)
+          (tf:pose-stamped->msg value))
+         (t (tf:pose-stamped->msg
+             (tf:pose->pose-stamped
+              "" 0.0
+              (tf:make-identity-pose)))))
+   :value_pose
+   (cond ((eql (type-of value) 'geometry_msgs-msg:pose)
+          value)
+         ((eql (type-of value) 'cl-tf:pose)
+          (tf:pose->msg value))
+         (t (tf:pose->msg (tf:make-identity-pose))))))
+
+(defun list->msg (lst parent-index highest-index &key (key ""))
+  (let* ((list-element-id (incf highest-index))
+         (list-element
+           (make-message
+            "designator_integration_msgs/KeyValuePair"
+            :id list-element-id
+            :parent parent-index
+            :key key
+            :type 3)))
+    (values
+     (alexandria:flatten
+      (append
+       `(,list-element)
+       (loop for list-item in lst
+             for ct = (cond ((listp list-item)
+                             (multiple-value-bind
+                                   (result last-index)
+                                 (list->msg
+                                  list-item
+                                  list-element-id
+                                  highest-index)
+                               (setf highest-index last-index)
+                               result))
+                            ((is-type-designator (value->type-code list-item))
+                             (let ((list-desc
+                                     (append (description list-item)
+                                             (list `(_designator_type
+                                                     ,(case (value->type-code list-item)
+                                                        (6 'action)
+                                                        (7 'object)
+                                                        (8 'location))))
+                                             (list `(_designator_memory_address
+                                                     ,(write-to-string
+                                                       (sb-kernel:get-lisp-obj-address list-item)))))))
+                               (multiple-value-bind
+                                     (result last-index)
+                                   (list->msg
+                                    list-desc
+                                    list-element-id
+                                    highest-index)
+                                 (setf highest-index last-index)
+                                 result)))
+                            (t (list-item->msg
+                                list-item
+                                list-element-id
+                                (incf highest-index))))
+             collect ct)))
+      highest-index)))
 
 (defun designator->msg (desig)
   (let* ((type (ecase (class-name (class-of desig))
