@@ -211,19 +211,18 @@ namespace designator_integration {
   }
   
   void KeyValuePair::printPair(int nSpaceOffset, bool bOffsetRegular, bool bNewline) {
-    std::cout << "(";
-  
-    if(!m_bIsAtom) {
+    if(m_strKey != "") {
+      std::cout << "(";
       std::cout << m_strKey << " ";
     }
-  
+    
     switch(m_evtType) {
     case STRING: {
-      std::cout << "\"" << m_strValue << "\")";
+      std::cout << "\"" << m_strValue << "\"";
     } break;
     
     case FLOAT: {
-      std::cout << m_fValue << ")";
+      std::cout << m_fValue;
     } break;
     
     case POSE: {
@@ -235,7 +234,7 @@ namespace designator_integration {
 	   << m_posPoseValue.orientation.x << ", "
 	   << m_posPoseValue.orientation.y << ", "
 	   << m_posPoseValue.orientation.z << ", "
-	   << m_posPoseValue.orientation.w << "]])";
+	   << m_posPoseValue.orientation.w << "]]";
     } break;
     
     case POSESTAMPED: {
@@ -250,7 +249,7 @@ namespace designator_integration {
 	   << m_psPoseStampedValue.pose.orientation.x << ", "
 	   << m_psPoseStampedValue.pose.orientation.y << ", "
 	   << m_psPoseStampedValue.pose.orientation.z << ", "
-	   << m_psPoseStampedValue.pose.orientation.w << "]])";
+	   << m_psPoseStampedValue.pose.orientation.w << "]]";
     } break;
     
     case DESIGNATOR_ACTION:
@@ -259,10 +258,6 @@ namespace designator_integration {
     case LIST: {
       std::string strPrefix;
       
-      // TODO(winkler): This check is SO wrong. Checks for the same
-      // variable as the wrapping `switch'. This is bound to always
-      // result in `LIST'. This is probably refering to the type of the
-      // value's child node. Fix this.
       switch(m_evtType) {
       case DESIGNATOR_ACTION:
 	strPrefix = "<action (";
@@ -277,38 +272,46 @@ namespace designator_integration {
 	strPrefix = "(";
 	break;
       }
-      std::cout << "(";
+      
+      std::cout << strPrefix;
       bool bFirst = true;
-    
+      
       for(int nI = 0; nI < m_lstChildren.size(); nI++) {
-	// TODO(winkler): What is it we're doing here? Why not use a
-	// simpler for(...) formulation? Figure out why this is being
-	// done so complicated.
-	std::list<KeyValuePair*>::iterator itChild = m_lstChildren.begin();
-	advance(itChild, nI);
-	KeyValuePair* ckvpChild = *itChild;
+      	std::list<KeyValuePair*>::iterator itChild = m_lstChildren.begin();
+      	advance(itChild, nI);
+      	KeyValuePair* ckvpChild = *itChild;
 	
 	if(!bFirst) {
-	  this->printSpaces(nSpaceOffset + m_strKey.length() + 3);
+	  this->printSpaces((m_strKey != "" ? nSpaceOffset + m_strKey.length() : 0) + (m_strKey == "" ? 1 : 3));
 	} else {
 	  bFirst = false;
 	}
-      
-	ckvpChild->printPair(nSpaceOffset + m_strKey.length() + 3);
-      
-	if(nI < m_lstChildren.size() - 1) {
-	  std::cout << std::endl;
+	
+	ckvpChild->printPair((m_strKey != "" ? nSpaceOffset + m_strKey.length() : 0) + (m_strKey == "" ? 1 : 3));
+	
+	if(m_strKey != "") {
+	  if(nI < m_lstChildren.size() - 1) {
+	    std::cout << std::endl;
+	  }
 	}
       }
       
       std::cout << ")";
+      
+      if(m_evtType == DESIGNATOR_ACTION || m_evtType == DESIGNATOR_OBJECT || m_evtType == DESIGNATOR_LOCATION) {
+	std::cout << ">";
+      }
     } break;
     
     default:
       break;
     }
+    
+    if(m_strKey != "") {
+      std::cout << ")";
+    }
   }
-
+  
   void KeyValuePair::printSpaces(int nSpaces) {
     for(int nI = 0; nI < nSpaces; nI++) {
       std::cout << " ";
