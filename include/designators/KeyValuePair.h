@@ -35,7 +35,7 @@ namespace designator_integration {
     int m_nParent;
     std::string m_strKey;
     std::string m_strValue;
-    double m_fValue;
+    double m_dValue;
     char* m_acValue;
     unsigned int m_unValueLength;
     geometry_msgs::Pose m_posPoseValue;
@@ -50,7 +50,7 @@ namespace designator_integration {
     KeyValuePair();
     KeyValuePair(std::string strKey);
     KeyValuePair(std::string strKey, std::string strValue);
-    KeyValuePair(std::string strKey, float fValue);
+    KeyValuePair(std::string strKey, double dValue);
     KeyValuePair(std::string strKey, char* acValue, unsigned int unLength);
     KeyValuePair(std::string strKey, geometry_msgs::Pose posPoseValue);
     KeyValuePair(std::string strKey, geometry_msgs::PoseStamped psPoseStampedValue);
@@ -67,8 +67,8 @@ namespace designator_integration {
     
     std::string stringValue();
     std::string stringValue(std::string strChildKey);
-    float floatValue();
-    float floatValue(std::string strChildKey);
+    double floatValue();
+    double floatValue(std::string strChildKey);
     geometry_msgs::PoseStamped poseStampedValue();
     geometry_msgs::PoseStamped poseStampedValue(std::string strChildKey);
     geometry_msgs::Pose poseValue();
@@ -85,12 +85,12 @@ namespace designator_integration {
     void setParent(int nParent);
     
     void addAtom(std::string strValue);
-    void addAtom(float fValue);
+    void addAtom(double dValue);
     void addAtom(geometry_msgs::PoseStamped psPoseStampedValue);
     void addAtom(geometry_msgs::Pose psPoseValue);
     
     void setValue(std::string strValue);
-    void setValue(float fValue);
+    void setValue(double dValue);
     void setValue(geometry_msgs::PoseStamped psPoseStampedValue);
     void setValue(geometry_msgs::Pose psPoseValue);
     void setValue(void* vdValue, unsigned int unLength);
@@ -98,7 +98,7 @@ namespace designator_integration {
     void clearDataValue();
     
     void setValue(std::string strKey, std::string strValue);
-    void setValue(std::string strKey, float fValue);
+    void setValue(std::string strKey, double dValue);
     void setValue(std::string strKey, geometry_msgs::PoseStamped psPoseStampedValue);
     void setValue(std::string strKey, geometry_msgs::Pose psPoseValue);
     void setValue(std::string strKey, char *acValue, int nLength);
@@ -121,7 +121,7 @@ namespace designator_integration {
     
     void addChild(KeyValuePair* ckvpChildAdd);
     KeyValuePair* addChild(std::string strKey, std::string strValue);
-    KeyValuePair* addChild(std::string strKey, float fValue);
+    KeyValuePair* addChild(std::string strKey, double dValue);
     KeyValuePair* addChild(std::string strKey, geometry_msgs::PoseStamped psPoseStampedValue);
     KeyValuePair* addChild(std::string strKey, geometry_msgs::Pose psPoseValue);
     KeyValuePair* addChild(std::string strKey, char* acValue, unsigned int unLength);

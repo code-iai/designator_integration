@@ -17,10 +17,10 @@ namespace designator_integration {
     this->setValue(strValue);
   }
 
-  KeyValuePair::KeyValuePair(std::string strKey, float fValue) {
+  KeyValuePair::KeyValuePair(std::string strKey, double dValue) {
     this->init();
     this->setKey(strKey);
-    this->setValue(fValue);
+    this->setValue(dValue);
   }
 
   KeyValuePair::KeyValuePair(std::string strKey, char* acValue, unsigned int unLength) {
@@ -59,7 +59,7 @@ namespace designator_integration {
     m_nParent = 0;
     m_nID = 0;
     m_strValue = "";
-    m_fValue = 0.0;
+    m_dValue = 0.0;
     m_evtType = STRING;
     m_acValue = NULL;
     m_unValueLength = 0;
@@ -73,7 +73,7 @@ namespace designator_integration {
     
     m_strKey = kvpContent.key;
     m_strValue = kvpContent.value_string;
-    m_fValue = kvpContent.value_float;
+    m_dValue = kvpContent.value_float;
     m_psPoseStampedValue = kvpContent.value_posestamped;
     m_posPoseValue = kvpContent.value_pose;
     
@@ -109,7 +109,7 @@ namespace designator_integration {
     
     case FLOAT: {
       std::stringstream sts;
-      sts << m_fValue;
+      sts << m_dValue;
       return sts.str();
     } break;
     
@@ -119,7 +119,7 @@ namespace designator_integration {
     }
   }
   
-  float KeyValuePair::floatValue() {
+  double KeyValuePair::floatValue() {
     // NOTE: Strings and floats can be returned as floats. Everything
     // else turns into the float value 0.0f. Strings that are returned
     // as floats must be valid number literals. If this is not the case,
@@ -127,18 +127,18 @@ namespace designator_integration {
     // returned.
     switch(m_evtType) {
     case STRING: {
-      float fValue = 0.0f;
-      if(sscanf(m_strValue.c_str(), "%f", &fValue) == EOF) {
+      double dValue = 0.0f;
+      if(sscanf(m_strValue.c_str(), "%lf", &dValue) == EOF) {
 	// Something went wrong.
 	std::cerr << "Error while converting '" << m_strValue << "' to float." << std::endl;
 	return 0.0f;
       } else {
-	return fValue;
+	return dValue;
       }
     } break;
     
     case FLOAT: {
-      return m_fValue;
+      return m_dValue;
     } break;
     
     default: {
@@ -222,7 +222,7 @@ namespace designator_integration {
     } break;
     
     case FLOAT: {
-      std::cout << m_fValue;
+      std::cout << m_dValue;
     } break;
     
     case POSE: {
@@ -331,8 +331,8 @@ namespace designator_integration {
     ckvpAtom->setIsAtom(true);
   }
   
-  void KeyValuePair::addAtom(float fValue) {
-    KeyValuePair* ckvpAtom = this->addChild("", fValue);
+  void KeyValuePair::addAtom(double dValue) {
+    KeyValuePair* ckvpAtom = this->addChild("", dValue);
     ckvpAtom->setIsAtom(true);
   }
   
@@ -351,8 +351,8 @@ namespace designator_integration {
     this->setType(STRING);
   }
   
-  void KeyValuePair::setValue(float fValue) {
-    m_fValue = fValue;
+  void KeyValuePair::setValue(double dValue) {
+    m_dValue = dValue;
     this->setType(FLOAT);
   }
   
@@ -432,9 +432,9 @@ namespace designator_integration {
     return ckvpNewChild;
   }
   
-  KeyValuePair* KeyValuePair::addChild(std::string strKey, float fValue) {
+  KeyValuePair* KeyValuePair::addChild(std::string strKey, double dValue) {
     KeyValuePair* ckvpNewChild = this->addChild(strKey);
-    ckvpNewChild->setValue(fValue);
+    ckvpNewChild->setValue(dValue);
     
     return ckvpNewChild;
   }
@@ -475,7 +475,7 @@ namespace designator_integration {
     
     // Values
     kvpSerialized.value_string = m_strValue;
-    kvpSerialized.value_float = m_fValue;
+    kvpSerialized.value_float = m_dValue;
     kvpSerialized.value_posestamped = m_psPoseStampedValue;
     kvpSerialized.value_pose = m_posPoseValue;
     
@@ -536,7 +536,7 @@ namespace designator_integration {
     return "";
   }
   
-  float KeyValuePair::floatValue(std::string strChildKey) {
+  double KeyValuePair::floatValue(std::string strChildKey) {
     KeyValuePair* ckvpChild = this->childForKey(strChildKey);
     
     if(ckvpChild) {
@@ -578,13 +578,13 @@ namespace designator_integration {
     }
   }
 
-  void KeyValuePair::setValue(std::string strKey, float fValue) {
+  void KeyValuePair::setValue(std::string strKey, double dValue) {
     KeyValuePair* ckvpChild = this->childForKey(strKey);
   
     if(ckvpChild) {
-      ckvpChild->setValue(fValue);
+      ckvpChild->setValue(dValue);
     } else {
-      this->addChild(strKey, fValue);
+      this->addChild(strKey, dValue);
     }
   }
 
