@@ -2,8 +2,8 @@
 Changelog for package designator_integration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.1 (2014-12-10)
+------------------
 * Fixed CMakeLists.txt
 * Mostly cleaned up package.xml and CMakeLists.txt for deployment
 * Changed data type to ''void'' instead of ''char'' to not confuse string interface
