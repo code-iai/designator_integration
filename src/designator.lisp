@@ -59,7 +59,7 @@
 
 (defun description->msg (desc &key (index 0) (parent 0))
   (case (type-of (car desc))
-    (common-lisp:symbol
+    ((common-lisp:symbol common-lisp:keyword)
      ;; It is a single pair
      (let* ((key (string (car desc)))
             (value (car (cdr desc)))
