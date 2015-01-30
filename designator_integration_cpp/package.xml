@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>designator_integration</name>
+  <name>designator_integration_cpp</name>
   <version>0.0.1</version>
   <description>Integration of Designator Communication via ROS as C++ Classes</description>
   

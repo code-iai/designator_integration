@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(designator_integration)
+project(designator_integration_cpp)
 
 find_package(catkin REQUIRED COMPONENTS designator_integration_msgs roscpp)
 
