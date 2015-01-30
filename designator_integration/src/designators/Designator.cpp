@@ -81,35 +81,35 @@ namespace designator_integration {
     
     while(lstKVPs.size() > 0) {
       for(KeyValuePair* kvpCurrent : lstKVPs) {
-	bool bFoundChild = false;
-	
-	for(KeyValuePair* kvpInspect : lstKVPs) {
-	  if(kvpInspect != kvpCurrent && kvpInspect->parent() == kvpCurrent->id()) {
- 	    bFoundChild = true;
-	    break;
-	  }
-	}
-	
-	if(!bFoundChild) {
-	  bool bFoundParent = false;
-	  
-	  for(KeyValuePair* kvpInspect : lstKVPs) {
-	    if(kvpInspect != kvpCurrent && kvpInspect->id() == kvpCurrent->parent()) {
-	      kvpInspect->addChild(kvpCurrent);
-	      lstKVPs.remove(kvpCurrent);
-	      bFoundParent = true;
-	      break;
-	    }
-	  }
-	  
-	  if(bFoundParent) {
-	    break;
-	  } else {
-	    m_lstChildren.push_back(kvpCurrent);
-	    lstKVPs.remove(kvpCurrent);
-	    break;
-	  }
-	}
+        bool bFoundChild = false;
+
+        for(KeyValuePair* kvpInspect : lstKVPs) {
+          if(kvpInspect != kvpCurrent && kvpInspect->parent() == kvpCurrent->id()) {
+            bFoundChild = true;
+            break;
+          }
+        }
+
+        if(!bFoundChild) {
+          bool bFoundParent = false;
+
+          for(KeyValuePair* kvpInspect : lstKVPs) {
+            if(kvpInspect != kvpCurrent && kvpInspect->id() == kvpCurrent->parent()) {
+              kvpInspect->addChild(kvpCurrent);
+              lstKVPs.remove(kvpCurrent);
+              bFoundParent = true;
+              break;
+            }
+          }
+
+          if(bFoundParent) {
+            break;
+          } else {
+            m_lstChildren.push_back(kvpCurrent);
+            lstKVPs.remove(kvpCurrent);
+            break;
+          }
+        }
       }
     }
   }
@@ -136,11 +136,11 @@ namespace designator_integration {
       std::vector<designator_integration_msgs::KeyValuePair> vecKVPMsgs = kvpCurrent->serializeToMessage(0, nHighestID + 1);
       
       for(designator_integration_msgs::KeyValuePair kvpmsgCurrent : vecKVPMsgs) {
-	if(kvpmsgCurrent.id > nHighestID) {
-	  nHighestID = kvpmsgCurrent.id;
-	}
-      
-	vecKVPs.push_back(kvpmsgCurrent);
+        if(kvpmsgCurrent.id > nHighestID) {
+          nHighestID = kvpmsgCurrent.id;
+        }
+
+        vecKVPs.push_back(kvpmsgCurrent);
       }
     }
     
