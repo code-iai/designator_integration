@@ -1,1 +1,0 @@
-../designator-integration-lisp.asd
