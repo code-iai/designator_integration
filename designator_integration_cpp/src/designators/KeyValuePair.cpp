@@ -526,26 +526,26 @@ namespace designator_integration {
     return bResult;
   }
   
-  std::string KeyValuePair::stringValue(std::string strChildKey) {
+  std::string KeyValuePair::stringValue(std::string strChildKey, std::string strDefault) {
     KeyValuePair* ckvpChild = this->childForKey(strChildKey);
     
     if(ckvpChild) {
       return ckvpChild->stringValue();
     }
   
-    return "";
+    return strDefault;
   }
   
-  double KeyValuePair::floatValue(std::string strChildKey) {
+  double KeyValuePair::floatValue(std::string strChildKey, double dDefault) {
     KeyValuePair* ckvpChild = this->childForKey(strChildKey);
     
     if(ckvpChild) {
       return ckvpChild->floatValue();
     }
-  
-    return 0.0;
+    
+    return dDefault;
   }
-
+  
   geometry_msgs::PoseStamped KeyValuePair::poseStampedValue(std::string strChildKey) {
     KeyValuePair* ckvpChild = this->childForKey(strChildKey);
     

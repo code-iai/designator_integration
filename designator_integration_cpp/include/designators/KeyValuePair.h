@@ -66,9 +66,9 @@ namespace designator_integration {
     void setIsAtom(bool bIsAtom);
     
     std::string stringValue();
-    std::string stringValue(std::string strChildKey);
+    std::string stringValue(std::string strChildKey, std::string strDefault = "");
     double floatValue();
-    double floatValue(std::string strChildKey);
+    double floatValue(std::string strChildKey, double dDefault = 0.0f);
     geometry_msgs::PoseStamped poseStampedValue();
     geometry_msgs::PoseStamped poseStampedValue(std::string strChildKey);
     geometry_msgs::Pose poseValue();
