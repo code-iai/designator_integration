@@ -62,6 +62,10 @@ namespace designator_integration {
     case LOCATION:
       evtType = DESIGNATOR_LOCATION;
       break;
+
+    case HUMAN:
+      evtType = DESIGNATOR_HUMAN;
+      break;
       
     default:
       break;

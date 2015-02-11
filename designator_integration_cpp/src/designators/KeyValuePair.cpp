@@ -255,6 +255,7 @@ namespace designator_integration {
     case DESIGNATOR_ACTION:
     case DESIGNATOR_OBJECT:
     case DESIGNATOR_LOCATION:
+    case DESIGNATOR_HUMAN:
     case LIST: {
       std::string strPrefix;
       
@@ -267,6 +268,9 @@ namespace designator_integration {
 	break;
       case DESIGNATOR_LOCATION:
 	strPrefix = "<location (";
+	break;
+      case DESIGNATOR_HUMAN:
+	strPrefix = "<human (";
 	break;
       case LIST:
 	strPrefix = "(";
@@ -298,7 +302,7 @@ namespace designator_integration {
       
       std::cout << ")";
       
-      if(m_evtType == DESIGNATOR_ACTION || m_evtType == DESIGNATOR_OBJECT || m_evtType == DESIGNATOR_LOCATION) {
+      if(m_evtType == DESIGNATOR_ACTION || m_evtType == DESIGNATOR_OBJECT || m_evtType == DESIGNATOR_LOCATION || m_evtType == DESIGNATOR_HUMAN) {
 	std::cout << ">";
       }
     } break;
@@ -415,6 +419,10 @@ namespace designator_integration {
   
   void KeyValuePair::setObjectDesignatorDescription(std::string strKey, std::list<KeyValuePair*> lstDescription) {
     this->setValue(strKey, DESIGNATOR_OBJECT, lstDescription);
+  }
+
+  void KeyValuePair::setHumanDesignatorDescription(std::string strKey, std::list<KeyValuePair*> lstDescription) {
+    this->setValue(strKey, DESIGNATOR_HUMAN, lstDescription);
   }
   
   void KeyValuePair::setKey(std::string strKey) {

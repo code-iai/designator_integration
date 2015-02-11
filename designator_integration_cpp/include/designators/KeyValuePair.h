@@ -27,7 +27,8 @@ namespace designator_integration {
       POSE = designator_integration_msgs::KeyValuePair::TYPE_POSE,
       DESIGNATOR_ACTION = designator_integration_msgs::KeyValuePair::TYPE_DESIGNATOR_ACTION,
       DESIGNATOR_OBJECT = designator_integration_msgs::KeyValuePair::TYPE_DESIGNATOR_OBJECT,
-      DESIGNATOR_LOCATION = designator_integration_msgs::KeyValuePair::TYPE_DESIGNATOR_LOCATION
+      DESIGNATOR_LOCATION = designator_integration_msgs::KeyValuePair::TYPE_DESIGNATOR_LOCATION,
+      DESIGNATOR_HUMAN = designator_integration_msgs::KeyValuePair::TYPE_DESIGNATOR_HUMAN
     } ValueType;
     
   private:
@@ -108,6 +109,7 @@ namespace designator_integration {
     void setLocationDesignatorDescription(std::string strKey, ValueType evtType, std::list<KeyValuePair*> lstDescription);
     void setActionDesignatorDescription(std::string strKey, std::list<KeyValuePair*> lstDescription);
     void setObjectDesignatorDescription(std::string strKey, std::list<KeyValuePair*> lstDescription);
+    void setHumanDesignatorDescription(std::string strKey, std::list<KeyValuePair*> lstDescription);
     
     void setKey(std::string strKey);
     void setType(ValueType evtType);

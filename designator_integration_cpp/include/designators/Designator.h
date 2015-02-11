@@ -25,7 +25,8 @@ namespace designator_integration {
       OBJECT = 0,
       ACTION = 1,
       LOCATION = 2,
-      UNKNOWN = 3
+      HUMAN = 3,
+      UNKNOWN = 4 
     } DesignatorType;
   
   private:
