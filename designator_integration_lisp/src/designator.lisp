@@ -52,10 +52,11 @@
     ((eql (type-of value) 'cram-designators:action-designator) 6)
     ((eql (type-of value) 'cram-designators:object-designator) 7)
     ((eql (type-of value) 'cram-designators:location-designator) 8)
+    ((eql (type-of value) 'cram-designators:human-designator) 9)
     (t 3))) ;; Default: list
 
 (defun is-type-designator (type)
-  (or (eql type 6) (eql type 7) (eql type 8)))
+  (or (eql type 6) (eql type 7) (eql type 8) (eql type 9)))
 
 (defun description->msg (desc &key (index 0) (parent 0))
   (case (type-of (car desc))
@@ -71,7 +72,8 @@
                                            ,(case type
                                               (6 'action)
                                               (7 'object)
-                                              (8 'location))))
+                                              (8 'location)
+                                              (9 'human))))
                                    (list `(_designator_memory_address
                                            ,(write-to-string
                                              (sb-kernel:get-lisp-obj-address value))))))
@@ -212,7 +214,8 @@
                                                      ,(case (value->type-code list-item)
                                                         (6 'action)
                                                         (7 'object)
-                                                        (8 'location))))
+                                                        (8 'location)
+                                                        (9 'human))))
                                              (list `(_designator_memory_address
                                                      ,(write-to-string
                                                        (sb-kernel:get-lisp-obj-address list-item)))))))
@@ -235,7 +238,8 @@
   (let* ((type (ecase (class-name (class-of desig))
                  (desig:object-designator 0)
                  (desig:action-designator 1)
-                 (desig:location-designator 2)))
+                 (desig:location-designator 2)
+                 (desig:human-designator 3)))
          (description (desig:description desig))
          (desc-msgs (alexandria:flatten
                      (description->msg description)))
@@ -330,5 +334,6 @@
         (0 (cram-designators:make-designator 'cram-designators:object final-tier))
         (1 (cram-designators:make-designator 'cram-designators:action final-tier))
         (2 (cram-designators:make-designator 'cram-designators:location final-tier))
-        (3 (cram-designators:make-designator 'cram-designators:object final-tier)) ;; Unknown -> assume an object
+        (3 (cram-designators:make-designator 'cram-designators:human final-tier))
+        (4 (cram-designators:make-designator 'cram-designators:object final-tier)) ;; Unknown -> assume an object
         ))))
