@@ -45,10 +45,10 @@
     ((or (symbolp value)
          (stringp value)) 0)
     ((numberp value) 1)
-    ((eql (type-of value) 'geometry_msgs-msg:posestamped) 4)
     ((eql (type-of value) 'geometry_msgs-msg:pose) 5)
-    ((eql (type-of value) 'cl-tf:pose) 5)
-    ((eql (type-of value) 'cl-tf:pose-stamped) 4)
+    ((eql (type-of value) 'cl-transforms:pose) 5)
+    ((eql (type-of value) 'geometry_msgs-msg:posestamped) 4)
+    ((eql (type-of value) 'cl-transforms-plugin:pose-stamped) 4)
     ((eql (type-of value) 'cram-designators:action-designator) 6)
     ((eql (type-of value) 'cram-designators:object-designator) 7)
     ((eql (type-of value) 'cram-designators:location-designator) 8)
@@ -120,18 +120,18 @@
                   :value_posestamped
                   (cond ((eql (type-of value) 'geometry_msgs-msg:posestamped)
                          value)
-                        ((eql (type-of value) 'cl-tf:pose-stamped)
-                         (tf:pose-stamped->msg value))
-                        (t (tf:pose-stamped->msg
+                        ((eql (type-of value) 'cl-transforms-plugin:pose-stamped)
+                         (cl-transforms-plugin:pose-stamped->msg value))
+                        (t (cl-transforms-plugin:pose-stamped->msg
                             (tf:pose->pose-stamped
                              "" 0.0
                              (tf:make-identity-pose)))))
                   :value_pose
                   (cond ((eql (type-of value) 'geometry_msgs-msg:pose)
                          value)
-                        ((eql (type-of value) 'cl-tf:pose)
-                         (tf:pose->msg value))
-                        (t (tf:pose->msg (tf:make-identity-pose)))))
+                        ((eql (type-of value) 'cl-transforms:pose)
+                         (cl-transforms-plugin::pose->msg value))
+                        (t (cl-transforms-plugin::pose->msg (cl-transforms:make-identity-pose)))))
                  new-index))))))
     (common-lisp:cons
      ;; It is a list of pairs
@@ -171,18 +171,18 @@
    :value_posestamped
    (cond ((eql (type-of value) 'geometry_msgs-msg:posestamped)
           value)
-         ((eql (type-of value) 'cl-tf:pose-stamped)
-          (tf:pose-stamped->msg value))
-         (t (tf:pose-stamped->msg
-             (tf:pose->pose-stamped
-              "" 0.0
-              (tf:make-identity-pose)))))
+         ((eql (type-of value) 'cl-transforms-plugin:pose-stamped)
+          (cl-transforms-plugin:pose-stamped->msg value))
+         (t (cl-transforms-plugin:pose-stamped->msg
+             (cl-transforms-plugin:make-pose-stamped
+              (tf:make-identity-pose)
+              "" 0.0))))
    :value_pose
    (cond ((eql (type-of value) 'geometry_msgs-msg:pose)
           value)
-         ((eql (type-of value) 'cl-tf:pose)
-          (tf:pose->msg value))
-         (t (tf:pose->msg (tf:make-identity-pose))))))
+         ((eql (type-of value) 'cl-transforms:pose)
+          (cl-transforms-plugin::pose->msg value))
+         (t (cl-transforms-plugin::pose->msg (cl-transforms:make-identity-pose))))))
 
 (defun list->msg (lst parent-index highest-index &key (key ""))
   (let* ((list-element-id (incf highest-index))
@@ -259,8 +259,8 @@
        (0 (list value_string))
        (1 (list value_float))
        (3 `())
-       (4 (list (tf:msg->pose-stamped value_posestamped)))
-       (5 (list (tf:msg->pose value_pose)))))))
+       (4 (list (cl-transforms-plugin::msg->pose-stamped value_posestamped)))
+       (5 (list (cl-transforms-plugin::msg->pose value_pose)))))))
 
 (defun msg->designator (msg)
   (roslisp:with-fields (type description) msg
