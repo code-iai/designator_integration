@@ -2,6 +2,14 @@
 Changelog for package designator_integration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* package.xml updates
+* Added support for human desigs in cpp.
+* Added default value parameters for string and double values
+* Renamed package designator_integration into designator_integration_cpp.
+* Contributors: Georg Bartels, Jan Winkler
+
 0.0.1 (2014-12-10)
 ------------------
 * Fixed CMakeLists.txt
