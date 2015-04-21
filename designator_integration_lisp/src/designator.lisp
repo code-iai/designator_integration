@@ -123,9 +123,9 @@
                         ((eql (type-of value) 'cl-transforms-plugin:pose-stamped)
                          (cl-transforms-plugin:pose-stamped->msg value))
                         (t (cl-transforms-plugin:pose-stamped->msg
-                            (tf:pose->pose-stamped
-                             "" 0.0
-                             (tf:make-identity-pose)))))
+                            (cl-transforms-plugin:make-pose-stamped
+                             (cl-transforms:make-identity-pose)
+                             "" 0.0))))
                   :value_pose
                   (cond ((eql (type-of value) 'geometry_msgs-msg:pose)
                          value)
