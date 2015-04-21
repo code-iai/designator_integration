@@ -4,8 +4,8 @@
   <version>0.0.1</version>
   <description>Integration of Designator Communication via ROS as C++ Classes</description>
   
-  <maintainer email="winkler@cs.uni-bremen.de">Jan Winkler</maintainer>
   <author email="winkler@cs.uni-bremen.de">Jan Winkler</author>
+  <maintainer email="winkler@cs.uni-bremen.de">Jan Winkler</maintainer>
   
   <license>BSD</license>
   
