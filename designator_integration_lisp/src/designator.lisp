@@ -47,8 +47,8 @@
     ((numberp value) 1)
     ((eql (type-of value) 'geometry_msgs-msg:posestamped) 4)
     ((eql (type-of value) 'geometry_msgs-msg:pose) 5)
-    ((eql (type-of value) 'cl-tf:pose) 5)
-    ((eql (type-of value) 'cl-tf:pose-stamped) 4)
+    ((eql (type-of value) 'cl-transforms:pose) 5)
+    ((eql (type-of value) 'cl-transforms-stamped:pose-stamped) 4)
     ((eql (type-of value) 'cram-designators:action-designator) 6)
     ((eql (type-of value) 'cram-designators:object-designator) 7)
     ((eql (type-of value) 'cram-designators:location-designator) 8)
@@ -120,18 +120,20 @@
                   :value_posestamped
                   (cond ((eql (type-of value) 'geometry_msgs-msg:posestamped)
                          value)
-                        ((eql (type-of value) 'cl-tf:pose-stamped)
-                         (tf:pose-stamped->msg value))
-                        (t (tf:pose-stamped->msg
-                            (tf:pose->pose-stamped
+                        ((eql (type-of value) 'cl-transforms-stamped:pose-stamped)
+                         (cl-transforms-stamped:to-msg value))
+                        (t (cl-transforms-stamped:to-msg
+                            (cl-transforms-stamped:make-pose-stamped
                              "" 0.0
-                             (tf:make-identity-pose)))))
+                             (cl-transforms:make-identity-vector)
+                             (cl-transforms:make-identity-rotation)))))
                   :value_pose
                   (cond ((eql (type-of value) 'geometry_msgs-msg:pose)
                          value)
-                        ((eql (type-of value) 'cl-tf:pose)
-                         (tf:pose->msg value))
-                        (t (tf:pose->msg (tf:make-identity-pose)))))
+                        ((eql (type-of value) 'cl-transforms:pose)
+                         (cl-transforms-stamped:to-msg value))
+                        (t (cl-transforms-stamped:to-msg
+                            (cl-transforms:make-identity-pose)))))
                  new-index))))))
     (common-lisp:cons
      ;; It is a list of pairs
@@ -171,18 +173,20 @@
    :value_posestamped
    (cond ((eql (type-of value) 'geometry_msgs-msg:posestamped)
           value)
-         ((eql (type-of value) 'cl-tf:pose-stamped)
-          (tf:pose-stamped->msg value))
-         (t (tf:pose-stamped->msg
-             (tf:pose->pose-stamped
+         ((eql (type-of value) 'cl-transforms-stamped:pose-stamped)
+          (cl-transforms-stamped:to-msg value))
+         (t (cl-transforms-stamped:to-msg
+             (cl-transforms-stamped:make-pose-stamped
               "" 0.0
-              (tf:make-identity-pose)))))
+              (cl-transforms:make-identity-vector)
+              (cl-transforms:make-identity-rotation)))))
    :value_pose
    (cond ((eql (type-of value) 'geometry_msgs-msg:pose)
           value)
-         ((eql (type-of value) 'cl-tf:pose)
-          (tf:pose->msg value))
-         (t (tf:pose->msg (tf:make-identity-pose))))))
+         ((eql (type-of value) 'cl-transforms:pose)
+          (cl-transforms-stamped:to-msg value))
+         (t (cl-transforms-stamped:to-msg
+             (cl-transforms:make-identity-pose))))))
 
 (defun list->msg (lst parent-index highest-index &key (key ""))
   (let* ((list-element-id (incf highest-index))
@@ -253,14 +257,13 @@
   (roslisp:with-fields
       (type key value_string value_float value_posestamped value_pose) msg
     (append
-     `(,(intern (string-upcase key)
-                'cram-designator-properties))
+     `(,(intern (string-upcase key) :keyword))
      (ecase type
        (0 (list value_string))
        (1 (list value_float))
        (3 `())
-       (4 (list (tf:msg->pose-stamped value_posestamped)))
-       (5 (list (tf:msg->pose value_pose)))))))
+       (4 (list (cl-transforms-stamped:from-msg value_posestamped)))
+       (5 (list (cl-transforms-stamped:from-msg value_pose)))))))
 
 (defun msg->designator (msg)
   (roslisp:with-fields (type description) msg
@@ -331,9 +334,9 @@
                         (t (add-child-pair (pair-parent-id node)
                                            (pair-id node))))))))))))
       (case type
-        (0 (cram-designators:make-designator 'cram-designators:object final-tier))
-        (1 (cram-designators:make-designator 'cram-designators:action final-tier))
-        (2 (cram-designators:make-designator 'cram-designators:location final-tier))
-        (3 (cram-designators:make-designator 'cram-designators:human final-tier))
-        (4 (cram-designators:make-designator 'cram-designators:object final-tier)) ;; Unknown -> assume an object
+        (0 (cram-designators:make-designator :object final-tier))
+        (1 (cram-designators:make-designator :action final-tier))
+        (2 (cram-designators:make-designator :location final-tier))
+        (3 (cram-designators:make-designator :human final-tier))
+        (4 (cram-designators:make-designator :object final-tier)) ;; Unknown -> assume an object
         ))))

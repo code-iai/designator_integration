@@ -6,19 +6,24 @@
 
   <author email="winkler@cs.uni-bremen.de">Jan Winkler</author>
   <maintainer email="winkler@cs.uni-bremen.de">Jan Winkler</maintainer>
-  
+
   <license>BSD</license>
-  
+
   <buildtool_depend>catkin</buildtool_depend>
-  
+
   <build_depend>roslisp</build_depend>
   <build_depend>alexandria</build_depend>
   <build_depend>designator_integration_msgs</build_depend>
-  <build_depend>cl_tf2</build_depend>
-  
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>cl_transforms</build_depend>
+  <build_depend>cl_transforms_stamped</build_depend>
+  <build_depend>cram_designators</build_depend>
+
   <run_depend>roslisp</run_depend>
   <run_depend>alexandria</run_depend>
   <run_depend>designator_integration_msgs</run_depend>
-  <run_depend>cl_tf2</run_depend>
-  
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>cl_transforms</run_depend>
+  <run_depend>cl_transforms_stamped</run_depend>
+  <run_depend>cram_designators</run_depend>
 </package>
