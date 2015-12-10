@@ -53,6 +53,8 @@
     ((eql (type-of value) 'cram-designators:object-designator) 7)
     ((eql (type-of value) 'cram-designators:location-designator) 8)
     ((eql (type-of value) 'cram-designators:human-designator) 9)
+    ((eql (type-of value) 'geometry_msgs-msg:point) 10)
+    ((eql (type-of value) 'geometry_msgs-msg:wrench) 11)
     (t 3))) ;; Default: list
 
 (defun is-type-designator (type)
@@ -110,6 +112,10 @@
                   :parent parent
                   :key key
                   :type type
+                  :value_point (cond ((typep value 'geometry_msgs-msg:point) value)
+                                     (t (make-msg "geometry_msgs/Point")))
+                  :value_wrench (cond ((typep value 'geometry_msgs-msg:wrench) value)
+                                     (t (make-msg "geometry_msgs/Wrench")))
                   :value_string (cond ((or (symbolp value)
                                            (stringp value))
                                        (string value))
@@ -177,6 +183,10 @@
              (tf:pose->pose-stamped
               "" 0.0
               (tf:make-identity-pose)))))
+   :value_point (cond ((typep value 'geometry_msgs-msg:point) value)
+                      (t (make-msg "geometry_msgs/Point")))
+   :value_wrench (cond ((typep value 'geometry_msgs-msg:wrench) value)
+                      (t (make-msg "geometry_msgs/Wrench")))
    :value_pose
    (cond ((eql (type-of value) 'geometry_msgs-msg:pose)
           value)

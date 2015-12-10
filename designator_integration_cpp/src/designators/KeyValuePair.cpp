@@ -46,6 +46,18 @@ namespace designator_integration {
     this->setValue(posPoseValue);
   }
 
+  KeyValuePair::KeyValuePair(std::string strKey, geometry_msgs::Point posPointValue) {
+    this->init();
+    this->setKey(strKey);
+    this->setValue(posPointValue);
+  }
+
+  KeyValuePair::KeyValuePair(std::string strKey, geometry_msgs::Wrench posWrenchValue) {
+    this->init();
+    this->setKey(strKey);
+    this->setValue(posWrenchValue);
+  }
+
   KeyValuePair::KeyValuePair(std::list<KeyValuePair*> lstChildren) {
     this->init();
     this->setChildren(lstChildren);
@@ -76,7 +88,9 @@ namespace designator_integration {
     m_dValue = kvpContent.value_float;
     m_psPoseStampedValue = kvpContent.value_posestamped;
     m_posPoseValue = kvpContent.value_pose;
-    
+    m_posWrenchValue = kvpContent.value_wrench;
+    m_posPointValue = kvpContent.value_point;
+ 
     m_unValueLength = kvpContent.value_data.size();
     if(m_unValueLength > 0) {
       m_acValue = new char[m_unValueLength]();
@@ -169,6 +183,14 @@ namespace designator_integration {
     return m_posPoseValue;
   }
 
+  geometry_msgs::Point KeyValuePair::pointValue() {
+    return m_posPointValue;
+  }
+
+  geometry_msgs::Wrench KeyValuePair::wrenchValue() {
+    return m_posWrenchValue;
+  }
+
   int KeyValuePair::id() {
     return m_nID;
   }
@@ -235,6 +257,24 @@ namespace designator_integration {
 	   << m_posPoseValue.orientation.y << ", "
 	   << m_posPoseValue.orientation.z << ", "
 	   << m_posPoseValue.orientation.w << "]]";
+    } break;
+
+    case WRENCH: {
+      std::cout << "[wrench: [force: "
+	   << m_posWrenchValue.force.x << ", "
+	   << m_posWrenchValue.force.y << ", "
+	   << m_posWrenchValue.force.z << "], "
+	   << "[torque: "
+	   << m_posWrenchValue.torque.x << ", "
+	   << m_posWrenchValue.torque.y << ", "
+	   << m_posWrenchValue.torque.z << "]]";
+    } break;
+
+    case POINT: {
+      std::cout << "[position: "
+	   << m_posPointValue.x << ", "
+	   << m_posPointValue.y << ", "
+	   << m_posPointValue.z << "]";
     } break;
     
     case POSESTAMPED: {
@@ -350,6 +390,16 @@ namespace designator_integration {
     ckvpAtom->setIsAtom(true);
   }
   
+  void KeyValuePair::addAtom(geometry_msgs::Point psPointValue) {
+    KeyValuePair* ckvpAtom = this->addChild("", psPointValue);
+    ckvpAtom->setIsAtom(true);
+  }
+
+  void KeyValuePair::addAtom(geometry_msgs::Wrench psWrenchValue) {
+    KeyValuePair* ckvpAtom = this->addChild("", psWrenchValue);
+    ckvpAtom->setIsAtom(true);
+  }
+
   void KeyValuePair::setValue(std::string strValue) {
     m_strValue = strValue;
     this->setType(STRING);
@@ -370,6 +420,16 @@ namespace designator_integration {
     this->setType(POSE);
   }
   
+  void KeyValuePair::setValue(geometry_msgs::Point posPointValue) {
+    m_posPointValue = posPointValue;
+    this->setType(POINT);
+  }
+
+  void KeyValuePair::setValue(geometry_msgs::Wrench posWrenchValue) {
+    m_posWrenchValue = posWrenchValue;
+    this->setType(WRENCH);
+  }
+
   void KeyValuePair::clearDataValue() {
     if(m_acValue != NULL) {
       delete[] m_acValue;
@@ -461,6 +521,20 @@ namespace designator_integration {
     return ckvpNewChild;
   }
   
+  KeyValuePair* KeyValuePair::addChild(std::string strKey, geometry_msgs::Point posPointValue) {
+    KeyValuePair* ckvpNewChild = this->addChild(strKey);
+    ckvpNewChild->setValue(posPointValue);
+    
+    return ckvpNewChild;
+  }
+
+  KeyValuePair* KeyValuePair::addChild(std::string strKey, geometry_msgs::Wrench posWrenchValue) {
+    KeyValuePair* ckvpNewChild = this->addChild(strKey);
+    ckvpNewChild->setValue(posWrenchValue);
+    
+    return ckvpNewChild;
+  }
+
   KeyValuePair* KeyValuePair::addChild(std::string strKey, char *acValue, unsigned int unLength) {
     KeyValuePair* ckvpNewChild = this->addChild(strKey);
     ckvpNewChild->setValue(acValue, unLength);
@@ -486,7 +560,9 @@ namespace designator_integration {
     kvpSerialized.value_float = m_dValue;
     kvpSerialized.value_posestamped = m_psPoseStampedValue;
     kvpSerialized.value_pose = m_posPoseValue;
-    
+    kvpSerialized.value_point = m_posPointValue;
+    kvpSerialized.value_wrench = m_posWrenchValue;
+ 
     for(int nI = 0; nI < m_unValueLength; nI++) {
       kvpSerialized.value_data.push_back(m_acValue[nI]);
     }
@@ -576,6 +652,28 @@ namespace designator_integration {
     return posEmpty;
   }
   
+  geometry_msgs::Point KeyValuePair::pointValue(std::string strChildKey) {
+    KeyValuePair* ckvpChild = this->childForKey(strChildKey);
+    
+    if(ckvpChild) {
+      return ckvpChild->pointValue();
+    }
+    
+    geometry_msgs::Point pointEmpty;
+    return pointEmpty;
+  }
+
+  geometry_msgs::Wrench KeyValuePair::wrenchValue(std::string strChildKey) {
+    KeyValuePair* ckvpChild = this->childForKey(strChildKey);
+    
+    if(ckvpChild) {
+      return ckvpChild->wrenchValue();
+    }
+    
+    geometry_msgs::Wrench wrenchEmpty;
+    return wrenchEmpty;
+  }
+
   void KeyValuePair::setValue(std::string strKey, std::string strValue) {
     KeyValuePair* ckvpChild = this->childForKey(strKey);
   
@@ -616,6 +714,26 @@ namespace designator_integration {
     }
   }
 
+  void KeyValuePair::setValue(std::string strKey, geometry_msgs::Point posPointValue) {
+    KeyValuePair* ckvpChild = this->childForKey(strKey);
+  
+    if(ckvpChild) {
+      ckvpChild->setValue(posPointValue);
+    } else {
+      this->addChild(strKey, posPointValue);
+    }
+  }
+
+  void KeyValuePair::setValue(std::string strKey, geometry_msgs::Wrench posWrenchValue) {
+    KeyValuePair* ckvpChild = this->childForKey(strKey);
+  
+    if(ckvpChild) {
+      ckvpChild->setValue(posWrenchValue);
+    } else {
+      this->addChild(strKey, posWrenchValue);
+    }
+  }
+
   void KeyValuePair::clear() {
     m_lstChildren.clear();
   }
@@ -627,6 +745,8 @@ namespace designator_integration {
     ckvpCopy->setValue(this->floatValue());
     ckvpCopy->setValue(this->poseStampedValue());
     ckvpCopy->setValue(this->poseValue());
+    ckvpCopy->setValue(this->pointValue());
+    ckvpCopy->setValue(this->wrenchValue());
     ckvpCopy->setValue(this->dataValue(), this->dataValueLength());
     ckvpCopy->setType(this->type());
   
