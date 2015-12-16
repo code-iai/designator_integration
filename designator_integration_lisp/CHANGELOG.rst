@@ -2,6 +2,9 @@
 Changelog for package designator_integration_lisp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.3 (2015-12-04)
+------------------
+
 0.0.2 (2015-04-21)
 ------------------
 * package.xml updates

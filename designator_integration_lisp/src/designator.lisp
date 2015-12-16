@@ -53,6 +53,8 @@
     ((eql (type-of value) 'cram-designators:object-designator) 7)
     ((eql (type-of value) 'cram-designators:location-designator) 8)
     ((eql (type-of value) 'cram-designators:human-designator) 9)
+    ((eql (type-of value) 'geometry_msgs-msg:point) 10)
+    ((eql (type-of value) 'geometry_msgs-msg:wrench) 11)
     (t 3))) ;; Default: list
 
 (defun is-type-designator (type)
@@ -110,6 +112,10 @@
                   :parent parent
                   :key key
                   :type type
+                  :value_point (cond ((typep value 'geometry_msgs-msg:point) value)
+                                     (t (make-msg "geometry_msgs/Point")))
+                  :value_wrench (cond ((typep value 'geometry_msgs-msg:wrench) value)
+                                     (t (make-msg "geometry_msgs/Wrench")))
                   :value_string (cond ((or (symbolp value)
                                            (stringp value))
                                        (string value))
@@ -170,23 +176,25 @@
    :value_float (cond ((numberp value)
                        value)
                       (t 0.0))
-   :value_posestamped
-   (cond ((eql (type-of value) 'geometry_msgs-msg:posestamped)
-          value)
-         ((eql (type-of value) 'cl-transforms-stamped:pose-stamped)
-          (cl-transforms-stamped:to-msg value))
-         (t (cl-transforms-stamped:to-msg
-             (cl-transforms-stamped:make-pose-stamped
-              "" 0.0
-              (cl-transforms:make-identity-vector)
-              (cl-transforms:make-identity-rotation)))))
-   :value_pose
-   (cond ((eql (type-of value) 'geometry_msgs-msg:pose)
-          value)
-         ((eql (type-of value) 'cl-transforms:pose)
-          (cl-transforms-stamped:to-msg value))
-         (t (cl-transforms-stamped:to-msg
-             (cl-transforms:make-identity-pose))))))
+   :value_posestamped (cond ((eql (type-of value) 'geometry_msgs-msg:posestamped)
+                             value)
+                            ((eql (type-of value) 'cl-transforms-stamped:pose-stamped)
+                             (cl-transforms-stamped:to-msg value))
+                            (t (cl-transforms-stamped:to-msg
+                                (cl-transforms-stamped:make-pose-stamped
+                                 "" 0.0
+                                 (cl-transforms:make-identity-vector)
+                                 (cl-transforms:make-identity-rotation)))))
+   :value_point (cond ((typep value 'geometry_msgs-msg:point) value)
+                      (t (make-msg "geometry_msgs/Point")))
+   :value_wrench (cond ((typep value 'geometry_msgs-msg:wrench) value)
+                       (t (make-msg "geometry_msgs/Wrench")))
+   :value_pose (cond ((eql (type-of value) 'geometry_msgs-msg:pose)
+                      value)
+                     ((eql (type-of value) 'cl-transforms:pose)
+                      (cl-transforms-stamped:to-msg value))
+                     (t (cl-transforms-stamped:to-msg
+                         (cl-transforms:make-identity-pose))))))
 
 (defun list->msg (lst parent-index highest-index &key (key ""))
   (let* ((list-element-id (incf highest-index))
