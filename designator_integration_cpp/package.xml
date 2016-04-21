@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>designator_integration_cpp</name>
-  <version>0.0.4</version>
+  <version>0.0.5</version>
   <description>Integration of Designator Communication via ROS as C++ Classes</description>
   
   <author email="winkler@cs.uni-bremen.de">Jan Winkler</author>
