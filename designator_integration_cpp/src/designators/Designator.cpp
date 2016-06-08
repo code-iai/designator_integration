@@ -129,7 +129,7 @@ namespace designator_integration {
     }
   }
   
-  designator_integration_msgs::Designator Designator::serializeToMessage() {
+  designator_integration_msgs::Designator Designator::serializeToMessage(bool setParent) {
     designator_integration_msgs::Designator msgDesig;
     msgDesig.type = (int)m_edtType;
     
@@ -137,7 +137,7 @@ namespace designator_integration {
     std::vector<designator_integration_msgs::KeyValuePair> vecKVPs;
     
     for(KeyValuePair* kvpCurrent : m_lstChildren) {
-      std::vector<designator_integration_msgs::KeyValuePair> vecKVPMsgs = kvpCurrent->serializeToMessage(0, nHighestID + 1);
+      std::vector<designator_integration_msgs::KeyValuePair> vecKVPMsgs = kvpCurrent->serializeToMessage(0, nHighestID + 1,setParent);
       
       for(designator_integration_msgs::KeyValuePair kvpmsgCurrent : vecKVPMsgs) {
         if(kvpmsgCurrent.id > nHighestID) {

@@ -468,14 +468,20 @@ namespace designator_integration {
     return ckvpNewChild;
   }
   
-  std::vector<designator_integration_msgs::KeyValuePair> KeyValuePair::serializeToMessage(int nParent, int nID) {
+  std::vector<designator_integration_msgs::KeyValuePair> KeyValuePair::serializeToMessage(int nParent, int nID,bool setParent) {
     std::vector<designator_integration_msgs::KeyValuePair> vecReturn;
     designator_integration_msgs::KeyValuePair kvpSerialized;
     
     // Serialization header
+
     kvpSerialized.id = nID;
-    kvpSerialized.parent = nParent;
-    
+    if(setParent){
+        kvpSerialized.parent = nParent;
+    }
+    else
+    {
+      kvpSerialized.parent = m_nParent;
+    }
     // Meta data
     kvpSerialized.key = m_strKey;
     kvpSerialized.type = (int)m_evtType;
@@ -495,7 +501,7 @@ namespace designator_integration {
     
     int nHighestID = nID;
     for(KeyValuePair* kvpChild : m_lstChildren) {
-      std::vector<designator_integration_msgs::KeyValuePair> vecChildren = kvpChild->serializeToMessage(nID, nHighestID + 1);
+      std::vector<designator_integration_msgs::KeyValuePair> vecChildren = kvpChild->serializeToMessage(nID, nHighestID + 1,setParent);
       
       for(designator_integration_msgs::KeyValuePair dikvpMsg : vecChildren) {
 	if(dikvpMsg.id > nHighestID) {

@@ -49,7 +49,7 @@ namespace designator_integration {
     DesignatorType type();
     void printDesignator();
     
-    designator_integration_msgs::Designator serializeToMessage();
+    designator_integration_msgs::Designator serializeToMessage(bool setParent = true);
   };
 }
 
