@@ -240,49 +240,41 @@ public:
 
   bool Null()
   {
-    //std::cout << "Null()" << std::endl;
     return false;
   }
 
   bool Bool(bool b)
   {
-    //std::cout << "Bool(" << std::boolalpha << b << ")" << std::endl;
     return false;
   }
 
   bool Int(int i)
   {
-    //std::cout << "Int(" << i << ")" << std::endl;
     return Number<int32_t>(i);
   }
 
   bool Uint(unsigned u)
   {
-    //std::cout << "Uint(" << u << ")" << std::endl;
     return Number<uint32_t>(u);
   }
 
   bool Int64(int64_t i)
   {
-    //std::cout << "Int64(" << i << ")" << std::endl;
     return Number<int64_t>(i);
   }
 
   bool Uint64(uint64_t u)
   {
-    //std::cout << "Uint64(" << u << ")" << std::endl;
     return Number<uint64_t>(u);
   }
 
   bool Double(double d)
   {
-    //std::cout << "Double(" << d << ")" << std::endl;
     return Number<double>(d);
   }
 
   bool String(const char *str, rapidjson::SizeType length, bool copy)
   {
-    //std::cout << "String(" << str << ", " << length << ", " << std::boolalpha << copy << ")" << std::endl;
     std::string value(str, length);
 
     if(status == READ_POSESTAMPED)
@@ -306,7 +298,6 @@ public:
 
   bool Key(const char *str, rapidjson::SizeType length, bool copy)
   {
-    //std::cout << "Key(" << str << ", " << length << ", " << std::boolalpha << copy << ")" << std::endl;
     std::string value(str, length);
 
     lastKey = value;
@@ -325,14 +316,12 @@ public:
 
   bool StartObject()
   {
-    //std::cout << "StartObject()" << std::endl;
     status = READ_KEY;
     return true;
   }
 
   bool EndObject(rapidjson::SizeType memberCount)
   {
-    //std::cout << "EndObject(" << memberCount << ")" << std::endl;
     KeyValuePair *kv = kvStack.back();
     if(status == READ_POSE)
     {
@@ -351,14 +340,12 @@ public:
 
   bool StartArray()
   {
-    //std::cout << "StartArray()" << std::endl;
     status = READ_ARRAY;
     return true;
   }
 
   bool EndArray(rapidjson::SizeType elementCount)
   {
-    //std::cout << "EndArray(" << elementCount << ")" << std::endl;
     KeyValuePair *kv = kvStack.back();
     kv->setValue(array.data(), array.size());
     if(kv->key().empty())
@@ -381,8 +368,6 @@ public:
       std::cout << "Parse error: " << res.Code() << " at " << res.Offset() << std::endl;
     }
 
-    std::cout << "m_evtType: " << m_evtType << std::endl;
-    std::cout << "m_edtType: " << m_edtType << std::endl;
     switch(m_evtType)
     {
       case DESIGNATOR_ACTION:
@@ -457,11 +442,9 @@ public:
       json.String(child->key());
     switch(child->type()){
     case KeyValuePair::STRING:
-      std::cout << "STRING" << std::endl;
       json.String(child->stringValue());
       break;
     case KeyValuePair::FLOAT:
-      std::cout << "FLOAT" << std::endl;
       json.Double(child->floatValue());
       break;
     case KeyValuePair::DATA:
@@ -478,11 +461,9 @@ public:
       break;
     }
     case KeyValuePair::LIST:
-      std::cout << "LIST" << std::endl;
       serializeList(KeyValuePair::LIST, child->children());
       break;
     case KeyValuePair::POSESTAMPED:
-      std::cout << "POSESTAMPED" << std::endl;
       json.StartObject();
       json.String(TYPE_FIELD);
       json.Int(KeyValuePair::POSESTAMPED);
@@ -491,7 +472,6 @@ public:
       json.EndObject();
       break;
     case KeyValuePair::POSE:
-      std::cout << "POSE" << std::endl;
       json.StartObject();
       json.String(TYPE_FIELD);
       json.Int(KeyValuePair::POSE);
@@ -499,19 +479,15 @@ public:
       json.EndObject();
       break;
     case KeyValuePair::DESIGNATOR_ACTION:
-      std::cout << "DESIGNATOR_ACTION" << std::endl;
       serializeList(KeyValuePair::DESIGNATOR_ACTION, child->children());
       break;
     case KeyValuePair::DESIGNATOR_OBJECT:
-      std::cout << "DESIGNATOR_OBJECT" << std::endl;
       serializeList(KeyValuePair::DESIGNATOR_OBJECT, child->children());
       break;
     case KeyValuePair::DESIGNATOR_LOCATION:
-      std::cout << "DESIGNATOR_LOCATION" << std::endl;
       serializeList(KeyValuePair::DESIGNATOR_LOCATION, child->children());
       break;
     case KeyValuePair::DESIGNATOR_HUMAN:
-      std::cout << "DESIGNATOR_HUMAN" << std::endl;
       serializeList(KeyValuePair::DESIGNATOR_HUMAN, child->children());
       break;
     }
