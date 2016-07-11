@@ -26,30 +26,36 @@ namespace designator_integration {
       ACTION = 1,
       LOCATION = 2,
       HUMAN = 3,
-      UNKNOWN = 4 
+      UNKNOWN = 4
     } DesignatorType;
-  
+
   private:
     DesignatorType m_edtType;
-  
+
   public:
     Designator();
     Designator(Designator* desigTemplate);
     Designator(designator_integration_msgs::Designator desigContent);
     Designator(DesignatorType edtType, KeyValuePair* kvpDescription = NULL);
     Designator(DesignatorType edtType, std::list<KeyValuePair*> lstDescription);
-    
+
     void fillFromDescription(DesignatorType edtType, std::list<KeyValuePair*> lstDescription);
     void setDescription(std::list<KeyValuePair*> lstDescription);
     std::list<KeyValuePair*> description();
-    
+
     void setType(DesignatorType edtType);
-    
+
     void fillFromDesignatorMsg(designator_integration_msgs::Designator desigContent);
     DesignatorType type();
     void printDesignator();
-    
+
     designator_integration_msgs::Designator serializeToMessage();
+
+#ifdef WITH_JSON
+    void fillFromJSON(const std::string &json);
+    std::string serializeToJSON();
+    static std::string serializeToJSON(std::vector<Designator> &designators);
+#endif
   };
 }
 
