@@ -123,6 +123,7 @@ namespace designator_integration {
         }
       }
     }
+    setType((DesignatorType)desigContent.type);
   }
 
   Designator::DesignatorType Designator::type() {
