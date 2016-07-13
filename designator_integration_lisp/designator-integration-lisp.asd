@@ -31,14 +31,13 @@
   :description "Designator Integration Lisp Side"
 
   :depends-on (alexandria
-               designators
-               designators-ros
+               cram-designators
                designator_integration_msgs-msg
                designator_integration_msgs-srv
-               ;; cljlo
-               ;; cljlo-utils
-               ;; actionlib
-               )
+               cl-transforms
+               cl-transforms-stamped
+               roslisp
+               geometry_msgs-msg)
   :components
   ((:module "src"
     :components

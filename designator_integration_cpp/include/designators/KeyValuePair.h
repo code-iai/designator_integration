@@ -25,6 +25,8 @@ namespace designator_integration {
       LIST = designator_integration_msgs::KeyValuePair::TYPE_LIST,
       POSESTAMPED = designator_integration_msgs::KeyValuePair::TYPE_POSESTAMPED,
       POSE = designator_integration_msgs::KeyValuePair::TYPE_POSE,
+      WRENCH = designator_integration_msgs::KeyValuePair::TYPE_WRENCH,
+      POINT = designator_integration_msgs::KeyValuePair::TYPE_POINT,
       DESIGNATOR_ACTION = designator_integration_msgs::KeyValuePair::TYPE_DESIGNATOR_ACTION,
       DESIGNATOR_OBJECT = designator_integration_msgs::KeyValuePair::TYPE_DESIGNATOR_OBJECT,
       DESIGNATOR_LOCATION = designator_integration_msgs::KeyValuePair::TYPE_DESIGNATOR_LOCATION,
@@ -41,6 +43,8 @@ namespace designator_integration {
     unsigned int m_unValueLength;
     geometry_msgs::Pose m_posPoseValue;
     geometry_msgs::PoseStamped m_psPoseStampedValue;
+    geometry_msgs::Point m_posPointValue;
+    geometry_msgs::Wrench m_posWrenchValue;
     bool m_bIsAtom;
     
   protected:
@@ -53,6 +57,8 @@ namespace designator_integration {
     KeyValuePair(std::string strKey, std::string strValue);
     KeyValuePair(std::string strKey, double dValue);
     KeyValuePair(std::string strKey, char* acValue, unsigned int unLength);
+    KeyValuePair(std::string strKey, geometry_msgs::Point posPointValue);
+    KeyValuePair(std::string strKey, geometry_msgs::Wrench posWrenchValue);
     KeyValuePair(std::string strKey, geometry_msgs::Pose posPoseValue);
     KeyValuePair(std::string strKey, geometry_msgs::PoseStamped psPoseStampedValue);
     KeyValuePair(designator_integration_msgs::KeyValuePair kvpContent);
@@ -74,6 +80,10 @@ namespace designator_integration {
     geometry_msgs::PoseStamped poseStampedValue(std::string strChildKey);
     geometry_msgs::Pose poseValue();
     geometry_msgs::Pose poseValue(std::string strChildKey);
+    geometry_msgs::Point pointValue();
+    geometry_msgs::Point pointValue(std::string strChildKey);
+    geometry_msgs::Wrench wrenchValue();
+    geometry_msgs::Wrench wrenchValue(std::string strChildKey);
     char* dataValue();
     unsigned int dataValueLength();
     char* dataValue(unsigned int& unLength);
@@ -89,11 +99,15 @@ namespace designator_integration {
     void addAtom(double dValue);
     void addAtom(geometry_msgs::PoseStamped psPoseStampedValue);
     void addAtom(geometry_msgs::Pose psPoseValue);
-    
+    void addAtom(geometry_msgs::Point psPointValue);
+    void addAtom(geometry_msgs::Wrench psWrenchValue);
+ 
     void setValue(std::string strValue);
     void setValue(double dValue);
     void setValue(geometry_msgs::PoseStamped psPoseStampedValue);
     void setValue(geometry_msgs::Pose psPoseValue);
+    void setValue(geometry_msgs::Point psPointValue);
+    void setValue(geometry_msgs::Wrench psWrenchValue);
     void setValue(void* vdValue, unsigned int unLength);
     void setValue(ValueType evtType, std::list<KeyValuePair*> lstDescription);
     void clearDataValue();
@@ -102,6 +116,8 @@ namespace designator_integration {
     void setValue(std::string strKey, double dValue);
     void setValue(std::string strKey, geometry_msgs::PoseStamped psPoseStampedValue);
     void setValue(std::string strKey, geometry_msgs::Pose psPoseValue);
+    void setValue(std::string strKey, geometry_msgs::Point psPointValue);
+    void setValue(std::string strKey, geometry_msgs::Wrench psWrenchValue);
     void setValue(std::string strKey, char *acValue, int nLength);
     
     // Adding designator descriptions as values
@@ -126,6 +142,8 @@ namespace designator_integration {
     KeyValuePair* addChild(std::string strKey, double dValue);
     KeyValuePair* addChild(std::string strKey, geometry_msgs::PoseStamped psPoseStampedValue);
     KeyValuePair* addChild(std::string strKey, geometry_msgs::Pose psPoseValue);
+    KeyValuePair* addChild(std::string strKey, geometry_msgs::Point psPointValue);
+    KeyValuePair* addChild(std::string strKey, geometry_msgs::Wrench psWrenchValue);
     KeyValuePair* addChild(std::string strKey, char* acValue, unsigned int unLength);
     KeyValuePair* addChild(std::string strKey, ValueType evtType, std::list<KeyValuePair*> lstDescription);
     
