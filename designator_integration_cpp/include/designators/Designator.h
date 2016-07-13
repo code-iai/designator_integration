@@ -16,6 +16,7 @@
 
 // Private
 #include <designators/KeyValuePair.h>
+#include <designators/config.h>
 
 
 namespace designator_integration {
@@ -51,11 +52,12 @@ namespace designator_integration {
 
     designator_integration_msgs::Designator serializeToMessage();
 
-#ifdef WITH_JSON
+    // The following methods are only available if compiled with rapidJSON
+#if DESIGNATOR_WITH_JSON
     void fillFromJSON(const std::string &json);
     std::string serializeToJSON();
     static std::string serializeToJSON(std::vector<Designator> &designators);
-#endif
+#endif // DESIGNATOR_WITH_JSON
   };
 }
 

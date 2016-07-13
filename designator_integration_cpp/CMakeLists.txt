@@ -26,11 +26,10 @@ include_directories(include
 )
 
 if(${RapidJSON_FOUND})
-  include_directories(
-    ${RAPIDJSON_INCLUDE_DIRS}
-  )
-  add_definitions(-DWITH_JSON -DRAPIDJSON_HAS_STDSTRING)
+  include_directories(${RAPIDJSON_INCLUDE_DIRS})
 endif()
+
+configure_file(${PROJECT_SOURCE_DIR}/config.h.in ${PROJECT_SOURCE_DIR}/include/designators/config.h @ONLY)
 
 add_library(designator_integration
   src/designators/Designator.cpp

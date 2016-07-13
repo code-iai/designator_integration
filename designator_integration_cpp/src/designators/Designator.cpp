@@ -1,11 +1,12 @@
 #include <designators/Designator.h>
 
-#ifdef WITH_JSON
+#if DESIGNATOR_WITH_JSON
+#define RAPIDJSON_HAS_STDSTRING 1
 #include <rapidjson/rapidjson.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/reader.h>
-#endif
+#endif // DESIGNATOR_WITH_JSON
 
 
 namespace designator_integration {
@@ -160,7 +161,7 @@ namespace designator_integration {
     return msgDesig;
   }
 
-#ifdef WITH_JSON
+#if DESIGNATOR_WITH_JSON
 #define TYPE_FIELD "_designator_type"
 
 class JSON2Designator {
@@ -513,5 +514,5 @@ public:
     handler.json.EndArray();
     return std::string(handler.s.GetString());
   }
-#endif
+#endif // DESIGNATOR_WITH_JSON
 }
