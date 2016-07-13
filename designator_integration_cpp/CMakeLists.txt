@@ -3,6 +3,8 @@ project(designator_integration_cpp)
 
 find_package(catkin REQUIRED COMPONENTS designator_integration_msgs roscpp)
 
+find_package(RapidJSON QUIET)
+
 set(COMPILE_DEBUG 0)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
@@ -22,6 +24,12 @@ catkin_package(
 include_directories(include
   ${catkin_INCLUDE_DIRS}
 )
+
+if(${RapidJSON_FOUND})
+  include_directories(${RAPIDJSON_INCLUDE_DIRS})
+endif()
+
+configure_file(${PROJECT_SOURCE_DIR}/config.h.in ${PROJECT_SOURCE_DIR}/include/designators/config.h @ONLY)
 
 add_library(designator_integration
   src/designators/Designator.cpp
