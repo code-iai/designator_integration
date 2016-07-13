@@ -27,23 +27,10 @@
 
 (in-package :cl-user)
 
-(desig-props:def-desig-package
- designator-integration-lisp
- (:documentation "Designator Integration Lisp Side")
- (:nicknames :desig-int)
- (:use
-  #:common-lisp
-  ;; #:cram-roslisp-common
-  ;; #:cram-reasoning
-  ;; #:cram-process-modules
-  ;; #:crs
-  ;; #:cut
-  #:desig
-  #:designators-ros
-  ;; #:cljlo-utils
-  #:roslisp
-  ;; #:cram-plan-failures
-  )
+(defpackage designator-integration-lisp
+  (:documentation "Designator Integration Lisp Side")
+  (:nicknames :desig-int)
+  (:use #:common-lisp #:desig #:roslisp)
   (:export
    ;; Functions
    call-designator-service))
