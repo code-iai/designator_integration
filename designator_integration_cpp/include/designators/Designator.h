@@ -49,9 +49,9 @@ namespace designator_integration {
     void fillFromDesignatorMsg(designator_integration_msgs::Designator desigContent);
     DesignatorType type();
     void printDesignator();
-
-    designator_integration_msgs::Designator serializeToMessage();
-
+    
+    designator_integration_msgs::Designator serializeToMessage(bool setParent = true);
+    
     // The following methods are only available if compiled with rapidJSON
 #if DESIGNATOR_WITH_JSON
     void fillFromJSON(const std::string &json);

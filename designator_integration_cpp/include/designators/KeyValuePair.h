@@ -147,7 +147,8 @@ namespace designator_integration {
     KeyValuePair* addChild(std::string strKey, char* acValue, unsigned int unLength);
     KeyValuePair* addChild(std::string strKey, ValueType evtType, std::list<KeyValuePair*> lstDescription);
     
-    std::vector<designator_integration_msgs::KeyValuePair> serializeToMessage(int nParent, int nID);
+    std::vector<designator_integration_msgs::KeyValuePair> serializeToMessage(int nParent, int nID,bool setParent=true);
+
     KeyValuePair* childForKey(std::string strKey);
     bool removeChildForKey(std::string strKey);
     
