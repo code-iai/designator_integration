@@ -103,6 +103,12 @@
                 ;; Value is nested list <-> vector
                 (list->msg (map 'list #'identity value) parent new-index
                            :key key))
+               ((eql (type-of value) 'cl-tf:3d-vector)
+                ;; Value is tf:3d-vector
+                (list->msg `(,(cl-tf:x value)
+                             ,(cl-tf:y value)
+                             ,(cl-tf:z value))
+                           parent new-index :key key))
                (t
                 ;; Value is symbol/number/string/pose(stamped)
                 (values
