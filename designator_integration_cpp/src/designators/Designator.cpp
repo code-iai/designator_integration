@@ -516,4 +516,19 @@ public:
     return std::string(handler.s.GetString());
   }
 #endif // DESIGNATOR_WITH_JSON
+  
+  std::string Designator::typeToString(DesignatorType dtType) {
+    std::string strType;
+    
+    switch(dtType) {
+    case ACTION: strType = "ACTION"; break;
+    case OBJECT: strType = "OBJECT"; break;
+    case LOCATION: strType = "LOCATION"; break;
+    case HUMAN: strType = "HUMAN"; break;
+      
+    default: strType = "UNKNOWN"; break;
+    }
+    
+    return strType;
+  }
 }

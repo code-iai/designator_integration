@@ -66,6 +66,8 @@ namespace designator_integration {
       static Designator::Ptr create(Args ... args) {
       return std::make_shared<Designator>(std::forward<Args>(args)...);
     }
+    
+    static std::string typeToString(DesignatorType dtType);
   };
 }
 
