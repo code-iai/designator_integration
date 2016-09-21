@@ -5,6 +5,7 @@
 // System
 #include <list>
 #include <string>
+#include <memory>
 
 // ROS
 #include <ros/ros.h>
@@ -18,6 +19,8 @@
 namespace designator_integration {
   class KeyValuePair {
   public:
+    typedef std::shared_ptr<KeyValuePair> Ptr;
+    
     typedef enum ValueType_ {
       STRING = designator_integration_msgs::KeyValuePair::TYPE_STRING,
       FLOAT = designator_integration_msgs::KeyValuePair::TYPE_FLOAT,
@@ -157,6 +160,11 @@ namespace designator_integration {
     KeyValuePair* copy();
     
     std::list<std::string> keys();
+    
+    template<class ... Args>
+      static KeyValuePair::Ptr create(Args ... args) {
+      return std::make_shared<KeyValuePair>(std::forward<Args>(args)...);
+    }
   };
 }
 

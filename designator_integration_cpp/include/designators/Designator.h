@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <cstring>
 #include <iostream>
+#include <memory>
 
 // ROS
 #include <designator_integration_msgs/Designator.h>
@@ -22,6 +23,8 @@
 namespace designator_integration {
   class Designator : public KeyValuePair {
   public:
+    typedef std::shared_ptr<Designator> Ptr;
+    
     typedef enum DesignatorType_ {
       OBJECT = 0,
       ACTION = 1,
@@ -58,6 +61,11 @@ namespace designator_integration {
     std::string serializeToJSON();
     static std::string serializeToJSON(std::vector<Designator> &designators);
 #endif // DESIGNATOR_WITH_JSON
+    
+    template<class ... Args>
+      static Designator::Ptr create(Args ... args) {
+      return std::make_shared<Designator>(std::forward<Args>(args)...);
+    }
   };
 }
 
