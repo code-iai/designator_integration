@@ -206,6 +206,7 @@ public:
   std::vector<std::list<KeyValuePair *>> listStask;
   std::vector<char> array;
   geometry_msgs::PoseStamped pose;
+  geometry_msgs::TransformStamped transform;
   std::string lastKey;
 
   enum
@@ -215,7 +216,8 @@ public:
     READ_TYPE,
     READ_ARRAY,
     READ_POSESTAMPED,
-    READ_POSE
+    READ_POSE,
+    READ_TRANSFORMSTAMPED
   } status;
 
   JSON2Designator(Designator *designator) : status(READ_KEY)
@@ -238,6 +240,10 @@ public:
       else if(vt == KeyValuePair::POSESTAMPED)
       {
         status = READ_POSESTAMPED;
+      }
+      else if(vt == KeyValuePair::TRANSFORMSTAMPED)
+      {
+        status = READ_TRANSFORMSTAMPED;
       }
       else
       {
@@ -286,6 +292,51 @@ public:
       {
         pose.header.stamp.fromNSec((uint64_t)n);
       }
+      else
+      {
+        return false;
+      }
+    }
+
+    else if(status == READ_TRANSFORMSTAMPED)
+    {
+      if(lastKey == "pos_x")
+      {
+        transform.transform.translation.x = (double)n;
+      }
+      else if(lastKey == "pos_y")
+      {
+        transform.transform.translation.y = (double)n;
+      }
+      else if(lastKey == "pos_z")
+      {
+        transform.transform.translation.z = (double)n;
+      }
+      else if(lastKey == "rot_x")
+      {
+        transform.transform.rotation.x = (double)n;
+      }
+      else if(lastKey == "rot_y")
+      {
+        transform.transform.rotation.y = (double)n;
+      }
+      else if(lastKey == "rot_z")
+      {
+        transform.transform.rotation.z = (double)n;
+      }
+      else if(lastKey == "rot_w")
+      {
+        transform.transform.rotation.w = (double)n;
+      }
+      else if(lastKey == "seq")
+      {
+        transform.header.seq = (uint32_t)n;
+      }
+      else if(lastKey == "stamp")
+      {
+        transform.header.stamp.fromNSec((uint64_t)n);
+      }
+
       else
       {
         return false;
@@ -355,6 +406,21 @@ public:
         return false;
       }
     }
+    else if(status == READ_TRANSFORMSTAMPED)
+    {
+      if(lastKey == "frame_id")
+      {
+        transform.header.frame_id = value;
+      }
+      else if(lastKey == "child_frame_id")
+      {
+        transform.child_frame_id = value;
+      }
+      else
+      {
+        return false;
+      }
+    }
     else
     {
       KeyValuePair *kv = kvStack.back();
@@ -408,6 +474,11 @@ public:
     {
       kv->setValue(pose);
     }
+    else if(status == READ_TRANSFORMSTAMPED)
+    {
+      kv->setValue(transform);
+    }
+
     if(kv->key().empty())
     {
       kv->setIsAtom(true);
@@ -495,6 +566,26 @@ public:
     json.Double(pose.orientation.w);
   }
 
+  void serializeTransform(geometry_msgs::Transform transform,std::string child_frame_id)
+  {
+    json.String("child_frame_id");
+    json.String(child_frame_id);
+    json.String("pos_x");
+    json.Double(transform.translation.x);
+    json.String("pos_y");
+    json.Double(transform.translation.y);
+    json.String("pos_z");
+    json.Double(transform.translation.z);
+    json.String("rot_x");
+    json.Double(transform.rotation.x);
+    json.String("rot_y");
+    json.Double(transform.rotation.y);
+    json.String("rot_z");
+    json.Double(transform.rotation.z);
+    json.String("rot_w");
+    json.Double(transform.rotation.w);
+  }
+
   void serializeHeader(std_msgs::Header header)
   {
     json.String("seq");
@@ -508,8 +599,8 @@ public:
   void serializeList(const int type, std::list<KeyValuePair *> children)
   {
     json.StartObject();
-//    json.String(TYPE_FIELD);
-//    json.Int(type);
+    //    json.String(TYPE_FIELD);
+    //    json.Int(type);
     for(KeyValuePair * kvpCurrent : children)
     {
       serializeToJSON(kvpCurrent);
@@ -552,16 +643,24 @@ public:
       break;
     case KeyValuePair::POSESTAMPED:
       json.StartObject();
-//      json.String(TYPE_FIELD);
-//      json.Int(KeyValuePair::POSESTAMPED);
+      //      json.String(TYPE_FIELD);
+      //      json.Int(KeyValuePair::POSESTAMPED);
       serializeHeader(child->poseStampedValue().header);
       serializePose(child->poseStampedValue().pose);
       json.EndObject();
       break;
+    case KeyValuePair::TRANSFORMSTAMPED:
+      json.StartObject();
+      //      json.String(TYPE_FIELD);
+      //      json.Int(KeyValuePair::POSESTAMPED);
+      serializeHeader(child->transformStampedValue().header);
+      serializeTransform(child->transformStampedValue().transform,child->transformStampedValue().child_frame_id);
+      json.EndObject();
+      break;
     case KeyValuePair::POSE:
       json.StartObject();
-//      json.String(TYPE_FIELD);
-//      json.Int(KeyValuePair::POSE);
+      //      json.String(TYPE_FIELD);
+      //      json.Int(KeyValuePair::POSE);
       serializePose(child->poseValue());
       json.EndObject();
       break;

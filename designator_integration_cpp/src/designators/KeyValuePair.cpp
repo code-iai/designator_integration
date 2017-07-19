@@ -34,6 +34,12 @@ namespace designator_integration {
     this->fillWithKeyValueContent(kvpContent);
   }
 
+  KeyValuePair::KeyValuePair(std::string strKey, geometry_msgs::TransformStamped psTransformStampedValue) {
+    this->init();
+    this->setKey(strKey);
+    this->setValue(psTransformStampedValue);
+  }
+
   KeyValuePair::KeyValuePair(std::string strKey, geometry_msgs::PoseStamped psPoseStampedValue) {
     this->init();
     this->setKey(strKey);
@@ -86,6 +92,7 @@ namespace designator_integration {
     m_strKey = kvpContent.key;
     m_strValue = kvpContent.value_string;
     m_dValue = kvpContent.value_float;
+    m_tsTransformStampedValue = kvpContent.value_transformstamped;
     m_psPoseStampedValue = kvpContent.value_posestamped;
     m_posPoseValue = kvpContent.value_pose;
     m_posWrenchValue = kvpContent.value_wrench;
@@ -175,6 +182,10 @@ namespace designator_integration {
     return this->dataValue();
   }
 
+  geometry_msgs::TransformStamped KeyValuePair::transformStampedValue() {
+    return m_tsTransformStampedValue;
+  }
+
   geometry_msgs::PoseStamped KeyValuePair::poseStampedValue() {
     return m_psPoseStampedValue;
   }
@@ -258,6 +269,22 @@ namespace designator_integration {
 	   << m_posPoseValue.orientation.z << ", "
 	   << m_posPoseValue.orientation.w << "]]";
     } break;
+
+    case TRANSFORMSTAMPED: {
+        std::cout << "[transform: "
+             << "[stamp: " << m_tsTransformStampedValue.header.stamp.toSec() << "], "
+             << "[parent-frame-id: " << m_tsTransformStampedValue.header.frame_id << "], "
+             << "[child-frame-id: " << m_tsTransformStampedValue.child_frame_id <<"], "
+             << "[position: "
+             << m_tsTransformStampedValue.transform.translation.x << ", "
+             << m_tsTransformStampedValue.transform.translation.y << ", "
+             << m_tsTransformStampedValue.transform.translation.z << "], "
+             << "[orientation: "
+             << m_tsTransformStampedValue.transform.rotation.x<< ", "
+             << m_tsTransformStampedValue.transform.rotation.y << ", "
+             << m_tsTransformStampedValue.transform.rotation.z << ", "
+             << m_tsTransformStampedValue.transform.rotation.w << "]]";
+      } break;
 
     case WRENCH: {
       std::cout << "[wrench: [force: "
@@ -380,6 +407,11 @@ namespace designator_integration {
     ckvpAtom->setIsAtom(true);
   }
   
+  void KeyValuePair::addAtom(geometry_msgs::TransformStamped tsTransformStampedValue) {
+    KeyValuePair* ckvpAtom = this->addChild("", tsTransformStampedValue);
+    ckvpAtom->setIsAtom(true);
+  }
+
   void KeyValuePair::addAtom(geometry_msgs::PoseStamped psPoseStampedValue) {
     KeyValuePair* ckvpAtom = this->addChild("", psPoseStampedValue);
     ckvpAtom->setIsAtom(true);
@@ -410,6 +442,11 @@ namespace designator_integration {
     this->setType(FLOAT);
   }
   
+  void KeyValuePair::setValue(geometry_msgs::TransformStamped tsTransformStampedValue) {
+    m_tsTransformStampedValue = tsTransformStampedValue;
+    this->setType(POSESTAMPED);
+  }
+
   void KeyValuePair::setValue(geometry_msgs::PoseStamped psPoseStampedValue) {
     m_psPoseStampedValue = psPoseStampedValue;
     this->setType(POSESTAMPED);
@@ -506,6 +543,13 @@ namespace designator_integration {
     
     return ckvpNewChild;
   }
+
+  KeyValuePair* KeyValuePair::addChild(std::string strKey, geometry_msgs::TransformStamped tsTransformStampedValue) {
+    KeyValuePair* ckvpNewChild = this->addChild(strKey);
+    ckvpNewChild->setValue(tsTransformStampedValue);
+
+    return ckvpNewChild;
+  }
   
   KeyValuePair* KeyValuePair::addChild(std::string strKey, geometry_msgs::PoseStamped psPoseStampedValue) {
     KeyValuePair* ckvpNewChild = this->addChild(strKey);
@@ -564,6 +608,7 @@ namespace designator_integration {
     // Values
     kvpSerialized.value_string = m_strValue;
     kvpSerialized.value_float = m_dValue;
+    kvpSerialized.value_transformstamped = m_tsTransformStampedValue;
     kvpSerialized.value_posestamped = m_psPoseStampedValue;
     kvpSerialized.value_pose = m_posPoseValue;
     kvpSerialized.value_point = m_posPointValue;
@@ -635,6 +680,17 @@ namespace designator_integration {
     
     return dDefault;
   }
+
+  geometry_msgs::TransformStamped KeyValuePair::transformStampedValue(std::string strChildKey) {
+    KeyValuePair* ckvpChild = this->childForKey(strChildKey);
+
+    if(ckvpChild) {
+      return ckvpChild->transformStampedValue();
+    }
+
+    geometry_msgs::TransformStamped tsEmpty;
+    return tsEmpty;
+  }
   
   geometry_msgs::PoseStamped KeyValuePair::poseStampedValue(std::string strChildKey) {
     KeyValuePair* ckvpChild = this->childForKey(strChildKey);
@@ -700,6 +756,16 @@ namespace designator_integration {
     }
   }
 
+  void KeyValuePair::setValue(std::string strKey, geometry_msgs::TransformStamped tsTransformStampedValue) {
+    KeyValuePair* ckvpChild = this->childForKey(strKey);
+
+    if(ckvpChild) {
+      ckvpChild->setValue(tsTransformStampedValue);
+    } else {
+      this->addChild(strKey, tsTransformStampedValue);
+    }
+  }
+
   void KeyValuePair::setValue(std::string strKey, geometry_msgs::PoseStamped psPoseStampedValue) {
     KeyValuePair* ckvpChild = this->childForKey(strKey);
   
@@ -749,6 +815,7 @@ namespace designator_integration {
   
     ckvpCopy->setValue(this->stringValue());
     ckvpCopy->setValue(this->floatValue());
+    ckvpCopy->setValue(this->transformStampedValue());
     ckvpCopy->setValue(this->poseStampedValue());
     ckvpCopy->setValue(this->poseValue());
     ckvpCopy->setValue(this->pointValue());

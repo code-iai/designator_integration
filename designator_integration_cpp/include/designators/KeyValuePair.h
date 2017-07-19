@@ -33,7 +33,8 @@ namespace designator_integration {
       DESIGNATOR_ACTION = designator_integration_msgs::KeyValuePair::TYPE_DESIGNATOR_ACTION,
       DESIGNATOR_OBJECT = designator_integration_msgs::KeyValuePair::TYPE_DESIGNATOR_OBJECT,
       DESIGNATOR_LOCATION = designator_integration_msgs::KeyValuePair::TYPE_DESIGNATOR_LOCATION,
-      DESIGNATOR_HUMAN = designator_integration_msgs::KeyValuePair::TYPE_DESIGNATOR_HUMAN
+      DESIGNATOR_HUMAN = designator_integration_msgs::KeyValuePair::TYPE_DESIGNATOR_HUMAN,
+      TRANSFORMSTAMPED = designator_integration_msgs::KeyValuePair::TYPE_TRANSFORMSTAMPED
     } ValueType;
     
   private:
@@ -48,6 +49,7 @@ namespace designator_integration {
     geometry_msgs::PoseStamped m_psPoseStampedValue;
     geometry_msgs::Point m_posPointValue;
     geometry_msgs::Wrench m_posWrenchValue;
+    geometry_msgs::TransformStamped m_tsTransformStampedValue;
     bool m_bIsAtom;
     
   protected:
@@ -64,6 +66,7 @@ namespace designator_integration {
     KeyValuePair(std::string strKey, geometry_msgs::Wrench posWrenchValue);
     KeyValuePair(std::string strKey, geometry_msgs::Pose posPoseValue);
     KeyValuePair(std::string strKey, geometry_msgs::PoseStamped psPoseStampedValue);
+    KeyValuePair(std::string strKey, geometry_msgs::TransformStamped psTransformStampedValue);
     KeyValuePair(designator_integration_msgs::KeyValuePair kvpContent);
     KeyValuePair(std::list<KeyValuePair*> lstChildren);
     ~KeyValuePair();
@@ -81,6 +84,8 @@ namespace designator_integration {
     double floatValue(std::string strChildKey, double dDefault = 0.0f);
     geometry_msgs::PoseStamped poseStampedValue();
     geometry_msgs::PoseStamped poseStampedValue(std::string strChildKey);
+    geometry_msgs::TransformStamped transformStampedValue();
+    geometry_msgs::TransformStamped transformStampedValue(std::string strChildKey);
     geometry_msgs::Pose poseValue();
     geometry_msgs::Pose poseValue(std::string strChildKey);
     geometry_msgs::Point pointValue();
@@ -100,6 +105,8 @@ namespace designator_integration {
     
     void addAtom(std::string strValue);
     void addAtom(double dValue);
+
+    void addAtom(geometry_msgs::TransformStamped tsTransformStampedValue);
     void addAtom(geometry_msgs::PoseStamped psPoseStampedValue);
     void addAtom(geometry_msgs::Pose psPoseValue);
     void addAtom(geometry_msgs::Point psPointValue);
@@ -107,6 +114,8 @@ namespace designator_integration {
  
     void setValue(std::string strValue);
     void setValue(double dValue);
+
+    void setValue(geometry_msgs::TransformStamped tsTransformStampedValue);
     void setValue(geometry_msgs::PoseStamped psPoseStampedValue);
     void setValue(geometry_msgs::Pose psPoseValue);
     void setValue(geometry_msgs::Point psPointValue);
@@ -117,6 +126,7 @@ namespace designator_integration {
     
     void setValue(std::string strKey, std::string strValue);
     void setValue(std::string strKey, double dValue);
+    void setValue(std::string strKey, geometry_msgs::TransformStamped tsTransformStampedValue);
     void setValue(std::string strKey, geometry_msgs::PoseStamped psPoseStampedValue);
     void setValue(std::string strKey, geometry_msgs::Pose psPoseValue);
     void setValue(std::string strKey, geometry_msgs::Point psPointValue);
@@ -143,6 +153,7 @@ namespace designator_integration {
     void addChild(KeyValuePair* ckvpChildAdd);
     KeyValuePair* addChild(std::string strKey, std::string strValue);
     KeyValuePair* addChild(std::string strKey, double dValue);
+    KeyValuePair* addChild(std::string strKey, geometry_msgs::TransformStamped tsTransformStampedValue);
     KeyValuePair* addChild(std::string strKey, geometry_msgs::PoseStamped psPoseStampedValue);
     KeyValuePair* addChild(std::string strKey, geometry_msgs::Pose psPoseValue);
     KeyValuePair* addChild(std::string strKey, geometry_msgs::Point psPointValue);
