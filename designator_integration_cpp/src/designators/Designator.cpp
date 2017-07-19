@@ -9,171 +9,207 @@
 #endif // DESIGNATOR_WITH_JSON
 
 
-namespace designator_integration {
-  Designator::Designator() : KeyValuePair() {
-    this->m_edtType = OBJECT;
+namespace designator_integration
+{
+Designator::Designator() : KeyValuePair()
+{
+  this->m_edtType = OBJECT;
+}
+
+Designator::Designator(Designator *cdTemplate)
+{
+  this->setType(cdTemplate->type());
+  this->setDescription(cdTemplate->description());
+}
+
+Designator::Designator(designator_integration_msgs::Designator desigContent)
+{
+  this->fillFromDesignatorMsg(desigContent);
+}
+
+Designator::Designator(DesignatorType edtType, KeyValuePair *ckvpDescription)
+{
+  if(ckvpDescription)
+  {
+    this->fillFromDescription(edtType, ckvpDescription->children());
   }
-
-  Designator::Designator(Designator* cdTemplate) {
-    this->setType(cdTemplate->type());
-    this->setDescription(cdTemplate->description());
-  }
-
-  Designator::Designator(designator_integration_msgs::Designator desigContent) {
-    this->fillFromDesignatorMsg(desigContent);
-  }
-
-  Designator::Designator(DesignatorType edtType, KeyValuePair* ckvpDescription) {
-    if(ckvpDescription) {
-      this->fillFromDescription(edtType, ckvpDescription->children());
-    } else {
-      this->setType(edtType);
-    }
-  }
-
-  Designator::Designator(DesignatorType edtType, std::list<KeyValuePair*> lstDescription) {
-    this->fillFromDescription(edtType, lstDescription);
-  }
-
-  void Designator::fillFromDescription(DesignatorType edtType, std::list<KeyValuePair*> lstDescription) {
-    std::list<KeyValuePair*> lstDescriptionNew;
-
-    for(KeyValuePair* kvpDesc : lstDescription) {
-      lstDescriptionNew.push_back(kvpDesc->copy());
-    }
-
-    this->setDescription(lstDescriptionNew);
+  else
+  {
     this->setType(edtType);
   }
+}
 
-  void Designator::setDescription(std::list<KeyValuePair*> lstDescription) {
-    m_lstChildren = lstDescription;
+Designator::Designator(DesignatorType edtType, std::list<KeyValuePair *> lstDescription)
+{
+  this->fillFromDescription(edtType, lstDescription);
+}
+
+void Designator::fillFromDescription(DesignatorType edtType, std::list<KeyValuePair *> lstDescription)
+{
+  std::list<KeyValuePair *> lstDescriptionNew;
+
+  for(KeyValuePair * kvpDesc : lstDescription)
+  {
+    lstDescriptionNew.push_back(kvpDesc->copy());
   }
 
-  std::list<KeyValuePair*> Designator::description() {
-    return m_lstChildren;
+  this->setDescription(lstDescriptionNew);
+  this->setType(edtType);
+}
+
+void Designator::setDescription(std::list<KeyValuePair *> lstDescription)
+{
+  m_lstChildren = lstDescription;
+}
+
+std::list<KeyValuePair *> Designator::description()
+{
+  return m_lstChildren;
+}
+
+void Designator::setType(DesignatorType edtType)
+{
+  m_edtType = edtType;
+
+  ValueType evtType = DESIGNATOR_OBJECT;
+  switch(edtType)
+  {
+  case ACTION:
+    evtType = DESIGNATOR_ACTION;
+    break;
+
+  case OBJECT:
+    evtType = DESIGNATOR_OBJECT;
+    break;
+
+  case LOCATION:
+    evtType = DESIGNATOR_LOCATION;
+    break;
+
+  case HUMAN:
+    evtType = DESIGNATOR_HUMAN;
+    break;
+
+  default:
+    break;
   }
 
-  void Designator::setType(DesignatorType edtType) {
-    m_edtType = edtType;
+  m_evtType = evtType;
+}
 
-    ValueType evtType = DESIGNATOR_OBJECT;
-    switch(edtType) {
-    case ACTION:
-      evtType = DESIGNATOR_ACTION;
-      break;
+void Designator::fillFromDesignatorMsg(designator_integration_msgs::Designator desigContent)
+{
+  m_edtType = (DesignatorType)desigContent.type;
 
-    case OBJECT:
-      evtType = DESIGNATOR_OBJECT;
-      break;
-
-    case LOCATION:
-      evtType = DESIGNATOR_LOCATION;
-      break;
-
-    case HUMAN:
-      evtType = DESIGNATOR_HUMAN;
-      break;
-
-    default:
-      break;
-    }
-
-    m_evtType = evtType;
+  std::list<KeyValuePair *> lstKVPs;
+  for(designator_integration_msgs::KeyValuePair kvpmsgPair : desigContent.description)
+  {
+    KeyValuePair *ckvpCurrent = new KeyValuePair(kvpmsgPair);
+    lstKVPs.push_back(ckvpCurrent);
   }
 
-  void Designator::fillFromDesignatorMsg(designator_integration_msgs::Designator desigContent) {
-    m_edtType = (DesignatorType)desigContent.type;
+  while(lstKVPs.size() > 0)
+  {
+    for(KeyValuePair * kvpCurrent : lstKVPs)
+    {
+      bool bFoundChild = false;
 
-    std::list<KeyValuePair*> lstKVPs;
-    for(designator_integration_msgs::KeyValuePair kvpmsgPair : desigContent.description) {
-      KeyValuePair* ckvpCurrent = new KeyValuePair(kvpmsgPair);
-      lstKVPs.push_back(ckvpCurrent);
-    }
-
-    while(lstKVPs.size() > 0) {
-      for(KeyValuePair* kvpCurrent : lstKVPs) {
-        bool bFoundChild = false;
-
-        for(KeyValuePair* kvpInspect : lstKVPs) {
-          if(kvpInspect != kvpCurrent && kvpInspect->parent() == kvpCurrent->id()) {
-            bFoundChild = true;
-            break;
-          }
+      for(KeyValuePair * kvpInspect : lstKVPs)
+      {
+        if(kvpInspect != kvpCurrent && kvpInspect->parent() == kvpCurrent->id())
+        {
+          bFoundChild = true;
+          break;
         }
+      }
 
-        if(!bFoundChild) {
-          bool bFoundParent = false;
+      if(!bFoundChild)
+      {
+        bool bFoundParent = false;
 
-          for(KeyValuePair* kvpInspect : lstKVPs) {
-            if(kvpInspect != kvpCurrent && kvpInspect->id() == kvpCurrent->parent()) {
-              kvpInspect->addChild(kvpCurrent);
-              lstKVPs.remove(kvpCurrent);
-              bFoundParent = true;
-              break;
-            }
-          }
-
-          if(bFoundParent) {
-            break;
-          } else {
-            m_lstChildren.push_back(kvpCurrent);
+        for(KeyValuePair * kvpInspect : lstKVPs)
+        {
+          if(kvpInspect != kvpCurrent && kvpInspect->id() == kvpCurrent->parent())
+          {
+            kvpInspect->addChild(kvpCurrent);
             lstKVPs.remove(kvpCurrent);
+            bFoundParent = true;
             break;
           }
         }
-      }
-    }
-    setType((DesignatorType)desigContent.type);
-  }
 
-  Designator::DesignatorType Designator::type() {
-    return m_edtType;
-  }
-
-  void Designator::printDesignator() {
-    for(KeyValuePair* kvpCurrent : m_lstChildren) {
-      kvpCurrent->printPair(0);
-      std::cout << std::endl;
-    }
-  }
-  
-  designator_integration_msgs::Designator Designator::serializeToMessage(bool setParent) {
-    designator_integration_msgs::Designator msgDesig;
-    msgDesig.type = (int)m_edtType;
-
-    int nHighestID = 0;
-    std::vector<designator_integration_msgs::KeyValuePair> vecKVPs;
-
-    for(KeyValuePair* kvpCurrent : m_lstChildren) {
-      std::vector<designator_integration_msgs::KeyValuePair> vecKVPMsgs = kvpCurrent->serializeToMessage(0, nHighestID + 1, setParent);
-      
-      for(designator_integration_msgs::KeyValuePair kvpmsgCurrent : vecKVPMsgs) {
-        if(kvpmsgCurrent.id > nHighestID) {
-          nHighestID = kvpmsgCurrent.id;
+        if(bFoundParent)
+        {
+          break;
         }
-
-        vecKVPs.push_back(kvpmsgCurrent);
+        else
+        {
+          m_lstChildren.push_back(kvpCurrent);
+          lstKVPs.remove(kvpCurrent);
+          break;
+        }
       }
     }
-
-    msgDesig.description = vecKVPs;
-
-    return msgDesig;
   }
+  setType((DesignatorType)desigContent.type);
+}
+
+Designator::DesignatorType Designator::type()
+{
+  return m_edtType;
+}
+
+void Designator::printDesignator()
+{
+  for(KeyValuePair * kvpCurrent : m_lstChildren)
+  {
+    kvpCurrent->printPair(0);
+    std::cout << std::endl;
+  }
+}
+
+designator_integration_msgs::Designator Designator::serializeToMessage(bool setParent)
+{
+  designator_integration_msgs::Designator msgDesig;
+  msgDesig.type = (int)m_edtType;
+
+  int nHighestID = 0;
+  std::vector<designator_integration_msgs::KeyValuePair> vecKVPs;
+
+  for(KeyValuePair * kvpCurrent : m_lstChildren)
+  {
+    std::vector<designator_integration_msgs::KeyValuePair> vecKVPMsgs = kvpCurrent->serializeToMessage(0, nHighestID + 1, setParent);
+
+    for(designator_integration_msgs::KeyValuePair kvpmsgCurrent : vecKVPMsgs)
+    {
+      if(kvpmsgCurrent.id > nHighestID)
+      {
+        nHighestID = kvpmsgCurrent.id;
+      }
+
+      vecKVPs.push_back(kvpmsgCurrent);
+    }
+  }
+
+  msgDesig.description = vecKVPs;
+
+  return msgDesig;
+}
 
 #if DESIGNATOR_WITH_JSON
 #define TYPE_FIELD "_designator_type"
 
-class JSON2Designator {
+class JSON2Designator
+{
 public:
-  std::vector<KeyValuePair*> kvStack;
-  std::vector<std::list<KeyValuePair*>> listStask;
+  std::vector<KeyValuePair *> kvStack;
+  std::vector<std::list<KeyValuePair *>> listStask;
   std::vector<char> array;
   geometry_msgs::PoseStamped pose;
   std::string lastKey;
 
-  enum{
+  enum
+  {
     READ_KEY = 0,
     READ_VALUE,
     READ_TYPE,
@@ -196,11 +232,17 @@ public:
       KeyValuePair::ValueType vt = (KeyValuePair::ValueType)n;
       kv->setType(vt);
       if(vt == KeyValuePair::POSE)
+      {
         status = READ_POSE;
+      }
       else if(vt == KeyValuePair::POSESTAMPED)
+      {
         status = READ_POSESTAMPED;
+      }
       else
+      {
         status = READ_KEY;
+      }
     }
     else if(status == READ_ARRAY)
     {
@@ -209,32 +251,54 @@ public:
     else if(status == READ_POSE || status == READ_POSESTAMPED)
     {
       if(lastKey == "pos_x")
+      {
         pose.pose.position.x = (double)n;
+      }
       else if(lastKey == "pos_y")
+      {
         pose.pose.position.y = (double)n;
+      }
       else if(lastKey == "pos_z")
+      {
         pose.pose.position.z = (double)n;
+      }
       else if(lastKey == "rot_x")
+      {
         pose.pose.orientation.x = (double)n;
+      }
       else if(lastKey == "rot_y")
+      {
         pose.pose.orientation.y = (double)n;
+      }
       else if(lastKey == "rot_z")
+      {
         pose.pose.orientation.z = (double)n;
+      }
       else if(lastKey == "rot_w")
+      {
         pose.pose.orientation.w = (double)n;
+      }
       else if(lastKey == "seq")
+      {
         pose.header.seq = (uint32_t)n;
+      }
       else if(lastKey == "stamp")
+      {
         pose.header.stamp.fromNSec((uint64_t)n);
+      }
       else
+      {
         return false;
+      }
     }
     else
     {
       KeyValuePair *kv = kvStack.back();
       kv->setValue((double)n);
       if(kv->key().empty())
+      {
         kv->setIsAtom(true);
+      }
       kvStack.pop_back();
       status = READ_KEY;
     }
@@ -283,16 +347,22 @@ public:
     if(status == READ_POSESTAMPED)
     {
       if(lastKey == "frame_id")
+      {
         pose.header.frame_id = value;
+      }
       else
+      {
         return false;
+      }
     }
     else
     {
       KeyValuePair *kv = kvStack.back();
       kv->setValue(value);
       if(kv->key().empty())
+      {
         kv->setIsAtom(true);
+      }
       kvStack.pop_back();
       status = READ_KEY;
     }
@@ -305,11 +375,15 @@ public:
 
     lastKey = value;
     if(lastKey ==  TYPE_FIELD)
+    {
       status = READ_TYPE;
-    if(status ==  READ_KEY){
+    }
+    if(status ==  READ_KEY)
+    {
       status = READ_VALUE;
       KeyValuePair *parent = kvStack.back();
       KeyValuePair::ValueType t = parent->type();
+      std::transform(lastKey.begin(), lastKey.end(), lastKey.begin(), ::toupper);
       KeyValuePair *child = parent->addChild(lastKey, true);
       parent->setType(t);
       kvStack.push_back(child);
@@ -335,7 +409,9 @@ public:
       kv->setValue(pose);
     }
     if(kv->key().empty())
+    {
       kv->setIsAtom(true);
+    }
     kvStack.pop_back();
     status = READ_KEY;
     return true;
@@ -352,7 +428,9 @@ public:
     KeyValuePair *kv = kvStack.back();
     kv->setValue(array.data(), array.size());
     if(kv->key().empty())
+    {
       kv->setIsAtom(true);
+    }
     kvStack.pop_back();
     array.clear();
     status = READ_KEY;
@@ -360,34 +438,34 @@ public:
   }
 };
 
-  void Designator::fillFromJSON(const std::string &json)
+void Designator::fillFromJSON(const std::string &json)
+{
+  JSON2Designator handler(this);
+  rapidjson::Reader reader;
+  rapidjson::StringStream ss(json.c_str());
+  rapidjson::ParseResult res = reader.Parse(ss, handler);
+  if(!res)
   {
-    JSON2Designator handler(this);
-    rapidjson::Reader reader;
-    rapidjson::StringStream ss(json.c_str());
-    rapidjson::ParseResult res = reader.Parse(ss, handler);
-    if(!res)
-    {
-      std::cout << "Parse error: " << res.Code() << " at " << res.Offset() << std::endl;
-    }
-
-    switch(m_evtType)
-    {
-      case DESIGNATOR_ACTION:
-        this->m_edtType = ACTION;
-        break;
-      case DESIGNATOR_OBJECT:
-        this->m_edtType = OBJECT;
-        break;
-      case DESIGNATOR_HUMAN:
-        this->m_edtType = HUMAN;
-        break;
-      case DESIGNATOR_LOCATION:
-        this->m_edtType = LOCATION;
-        break;
-    }
-    return;
+    std::cout << "Parse error: " << res.Code() << " at " << res.Offset() << std::endl;
   }
+
+  switch(m_evtType)
+  {
+  case DESIGNATOR_ACTION:
+    this->m_edtType = ACTION;
+    break;
+  case DESIGNATOR_OBJECT:
+    this->m_edtType = OBJECT;
+    break;
+  case DESIGNATOR_HUMAN:
+    this->m_edtType = HUMAN;
+    break;
+  case DESIGNATOR_LOCATION:
+    this->m_edtType = LOCATION;
+    break;
+  }
+  return;
+}
 
 class Designator2JSON
 {
@@ -427,12 +505,12 @@ public:
     json.Uint64(header.stamp.toNSec());
   }
 
-  void serializeList(const int type, std::list<KeyValuePair*> children)
+  void serializeList(const int type, std::list<KeyValuePair *> children)
   {
     json.StartObject();
-    json.String(TYPE_FIELD);
-    json.Int(type);
-    for(KeyValuePair* kvpCurrent : children)
+//    json.String(TYPE_FIELD);
+//    json.Int(type);
+    for(KeyValuePair * kvpCurrent : children)
     {
       serializeToJSON(kvpCurrent);
     }
@@ -442,8 +520,14 @@ public:
   void serializeToJSON(KeyValuePair *child, bool first = false)
   {
     if(!first)
-      json.String(child->key());
-    switch(child->type()){
+    {
+      //upper case Keys
+      std::string ucKey = child->key();
+      std::transform(ucKey.begin(), ucKey.end(), ucKey.begin(), ::toupper);
+      json.String(ucKey);
+    }
+    switch(child->type())
+    {
     case KeyValuePair::STRING:
       json.String(child->stringValue());
       break;
@@ -451,33 +535,33 @@ public:
       json.Double(child->floatValue());
       break;
     case KeyValuePair::DATA:
-    {
-      std::cout << "DATA" << std::endl;
-      uint32_t length;
-      char *data = child->dataValue(length);
-      json.StartArray();
-      for(size_t i = 0; i < length; ++i)
       {
-        json.Int((int)data[i]);
+        std::cout << "DATA" << std::endl;
+        uint32_t length;
+        char *data = child->dataValue(length);
+        json.StartArray();
+        for(size_t i = 0; i < length; ++i)
+        {
+          json.Int((int)data[i]);
+        }
+        json.EndArray();
+        break;
       }
-      json.EndArray();
-      break;
-    }
     case KeyValuePair::LIST:
       serializeList(KeyValuePair::LIST, child->children());
       break;
     case KeyValuePair::POSESTAMPED:
       json.StartObject();
-      json.String(TYPE_FIELD);
-      json.Int(KeyValuePair::POSESTAMPED);
+//      json.String(TYPE_FIELD);
+//      json.Int(KeyValuePair::POSESTAMPED);
       serializeHeader(child->poseStampedValue().header);
       serializePose(child->poseStampedValue().pose);
       json.EndObject();
       break;
     case KeyValuePair::POSE:
       json.StartObject();
-      json.String(TYPE_FIELD);
-      json.Int(KeyValuePair::POSE);
+//      json.String(TYPE_FIELD);
+//      json.Int(KeyValuePair::POSE);
       serializePose(child->poseValue());
       json.EndObject();
       break;
@@ -497,38 +581,50 @@ public:
   }
 };
 
-  std::string Designator::serializeToJSON()
+std::string Designator::serializeToJSON()
+{
+  Designator2JSON handler;
+  handler.serializeToJSON(this, true);
+  return std::string(handler.s.GetString());
+}
+
+std::string Designator::serializeToJSON(std::vector<Designator> &designators)
+{
+  Designator2JSON handler;
+  handler.json.StartArray();
+  for(size_t i = 0; i < designators.size(); ++i)
   {
-    Designator2JSON handler;
-    handler.serializeToJSON(this, true);
-    return std::string(handler.s.GetString());
+    handler.serializeToJSON(&designators[i], true);
+  }
+  handler.json.EndArray();
+  return std::string(handler.s.GetString());
+}
+#endif // DESIGNATOR_WITH_JSON
+
+std::string Designator::typeToString(DesignatorType dtType)
+{
+  std::string strType;
+
+  switch(dtType)
+  {
+  case ACTION:
+    strType = "ACTION";
+    break;
+  case OBJECT:
+    strType = "OBJECT";
+    break;
+  case LOCATION:
+    strType = "LOCATION";
+    break;
+  case HUMAN:
+    strType = "HUMAN";
+    break;
+
+  default:
+    strType = "UNKNOWN";
+    break;
   }
 
-  std::string Designator::serializeToJSON(std::vector<Designator> &designators)
-  {
-    Designator2JSON handler;
-    handler.json.StartArray();
-    for(size_t i = 0; i < designators.size(); ++i)
-    {
-      handler.serializeToJSON(&designators[i], true);
-    }
-    handler.json.EndArray();
-    return std::string(handler.s.GetString());
-  }
-#endif // DESIGNATOR_WITH_JSON
-  
-  std::string Designator::typeToString(DesignatorType dtType) {
-    std::string strType;
-    
-    switch(dtType) {
-    case ACTION: strType = "ACTION"; break;
-    case OBJECT: strType = "OBJECT"; break;
-    case LOCATION: strType = "LOCATION"; break;
-    case HUMAN: strType = "HUMAN"; break;
-      
-    default: strType = "UNKNOWN"; break;
-    }
-    
-    return strType;
-  }
+  return strType;
+}
 }
