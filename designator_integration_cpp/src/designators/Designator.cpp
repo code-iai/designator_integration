@@ -449,7 +449,6 @@ public:
       status = READ_VALUE;
       KeyValuePair *parent = kvStack.back();
       KeyValuePair::ValueType t = parent->type();
-      std::transform(lastKey.begin(), lastKey.end(), lastKey.begin(), ::toupper);
       KeyValuePair *child = parent->addChild(lastKey, true);
       parent->setType(t);
       kvStack.push_back(child);
@@ -612,10 +611,7 @@ public:
   {
     if(!first)
     {
-      //upper case Keys
-      std::string ucKey = child->key();
-      std::transform(ucKey.begin(), ucKey.end(), ucKey.begin(), ::toupper);
-      json.String(ucKey);
+      json.String(child->key());
     }
     switch(child->type())
     {
