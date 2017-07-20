@@ -444,7 +444,7 @@ namespace designator_integration {
   
   void KeyValuePair::setValue(geometry_msgs::TransformStamped tsTransformStampedValue) {
     m_tsTransformStampedValue = tsTransformStampedValue;
-    this->setType(POSESTAMPED);
+    this->setType(TRANSFORMSTAMPED);
   }
 
   void KeyValuePair::setValue(geometry_msgs::PoseStamped psPoseStampedValue) {
