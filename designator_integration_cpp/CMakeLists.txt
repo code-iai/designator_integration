@@ -5,18 +5,16 @@ find_package(catkin REQUIRED COMPONENTS designator_integration_msgs roscpp)
 
 find_package(RapidJSON QUIET)
 
-message(${RapidJSON_VERSION})
 if(${RapidJSON_FOUND})
   if(${RapidJSON_VERSION}i EQUAL "1.0.0")
     set(WITH_RAPIDJSON True)
-    message("Found good version of RapidJSON(1.0.0)")
+    message(STATUS "Found good version of RapidJSON(1.0.0)")
    else()
     set(WITH_RAPIDJSON False)
-    message("Wrong version of RapidJSON")	  
+    message(STATUS "Wrong version of RapidJSON")
   endif()
 endif()
 
-message(${RAPIDJSON_INCLUDE_DIRS})
 set(COMPILE_DEBUG 0)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
