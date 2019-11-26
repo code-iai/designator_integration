@@ -56,7 +56,7 @@ namespace designator_integration {
     designator_integration_msgs::Designator serializeToMessage(bool setParent = true);
     
     // The following methods are only available if compiled with rapidJSON
-#if DESIGNATOR_WITH_JSON
+#ifdef DESIGNATOR_WITH_JSON
     void fillFromJSON(const std::string &json);
     std::string serializeToJSON();
     static std::string serializeToJSON(std::vector<Designator> &designators);

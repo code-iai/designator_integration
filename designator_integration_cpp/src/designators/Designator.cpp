@@ -1,6 +1,6 @@
 #include <designators/Designator.h>
 
-#if DESIGNATOR_WITH_JSON
+#ifdef DESIGNATOR_WITH_JSON
 #define RAPIDJSON_HAS_STDSTRING 1
 #include <rapidjson/rapidjson.h>
 #include <rapidjson/stringbuffer.h>
@@ -162,7 +162,7 @@ namespace designator_integration {
     return msgDesig;
   }
 
-#if DESIGNATOR_WITH_JSON
+#ifdef DESIGNATOR_WITH_JSON
 #define TYPE_FIELD "_designator_type"
 
 class JSON2Designator {
