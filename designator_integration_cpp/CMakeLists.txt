@@ -7,10 +7,10 @@ find_package(RapidJSON QUIET)
 
 if(${RapidJSON_FOUND})
   if(${RapidJSON_VERSION}i EQUAL "1.0.0")
-    set(WITH_RAPIDJSON True)
+    add_definitions(-DWITH_RAPIDJSON)
+    include_directories(${RAPIDJSON_INCLUDE_DIRS})
     message(STATUS "Found good version of RapidJSON(1.0.0)")
    else()
-    set(WITH_RAPIDJSON False)
     message(STATUS "Wrong version of RapidJSON")
   endif()
 endif()
@@ -34,10 +34,6 @@ catkin_package(
 include_directories(include
   ${catkin_INCLUDE_DIRS}
 )
-
-if(${WITH_RAPIDJSON})
-  include_directories(${RAPIDJSON_INCLUDE_DIRS})
-endif()
 
 configure_file(${PROJECT_SOURCE_DIR}/config.h.in ${PROJECT_SOURCE_DIR}/include/designators/config.h @ONLY)
 
